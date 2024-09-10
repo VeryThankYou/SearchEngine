@@ -44,7 +44,16 @@ class Index1 {
         while (current != null) {
             if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
             {
-                docName = current.next;
+                String docNameString = current.next.str;
+                WikiItem docNameStart = current.next;
+                WikiItem temp = docNameStart.next;
+                while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
+                {
+                    //System.out.println(docNameString);
+                    docNameString = docNameString + " " + temp.str;
+                    temp = temp.next;
+                }
+                docName = new WikiItem(docNameString, null);
             }
             if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) {
                 WikiItem temp = new WikiItem(docName.str, docNames);
