@@ -10,7 +10,8 @@ class Index1 {
         DocItem docs;
         WikiItem next;
  
-        WikiItem(String s, DocItem d, WikiItem n) {
+        WikiItem(String s, DocItem d, WikiItem n) 
+        {
             str = s;
             docs = d;
             next = n;
@@ -21,13 +22,15 @@ class Index1 {
         String str;
         DocItem next;
  
-        DocItem(String s, DocItem n) {
+        DocItem(String s, DocItem n) 
+        {
             str = s;
             next = n;
         }
     }
  
-    public Index1(String filename) {
+    public Index1(String filename) 
+    {
         String word;
         WikiItem current, tmp;
         try {
@@ -35,7 +38,8 @@ class Index1 {
             word = input.next();
             start = new WikiItem(word, null, null);
             current = start;
-            while (input.hasNext()) {   // Read all words in input
+            while (input.hasNext()) 
+            {   // Read all words in input
                 word = input.next();
                 //System.out.println(word);
                 tmp = new WikiItem(word, null, null);
@@ -50,7 +54,8 @@ class Index1 {
                 current.docs = docs;
                 current = current.next;
             }
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) 
+        {
             System.out.println("Error reading file " + filename);
         }
     }
@@ -104,7 +109,8 @@ class Index1 {
         for (;;) {
             System.out.println("Input search string or type exit to stop");
             String searchstr = console.nextLine();
-            if (searchstr.equals("exit")) {
+            if (searchstr.equals("exit")) 
+            {
                 break;
             }
             DocItem output = i.search(searchstr);
