@@ -4,13 +4,24 @@ import java.util.Scanner;
 class Index1 {
  
     WikiItem start;
-    WikiItem docName;
  
     private class WikiItem {
         String str;
+        DocItem docs;
         WikiItem next;
  
-        WikiItem(String s, WikiItem n) {
+        WikiItem(String s, DocItem d, WikiItem n) {
+            str = s;
+            docs = d;
+            next = n;
+        }
+    }
+
+    private class DocItem {
+        String str;
+        DocItem next;
+ 
+        DocItem(String s, DocItem n) {
             str = s;
             next = n;
         }
@@ -22,25 +33,33 @@ class Index1 {
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
             word = input.next();
-            start = new WikiItem(word, null);
+            start = new WikiItem(word, null, null);
             current = start;
             while (input.hasNext()) {   // Read all words in input
                 word = input.next();
                 //System.out.println(word);
-                tmp = new WikiItem(word, null);
+                tmp = new WikiItem(word, null, null);
                 current.next = tmp;
                 current = tmp;
             }
             input.close();
+            current = start;
+            while (current != null)
+            {
+                DocItem docs = findDocuments(current.str);
+                current.docs = docs;
+                current = current.next;
+            }
         } catch (FileNotFoundException e) {
             System.out.println("Error reading file " + filename);
         }
     }
- 
-    public WikiItem search(String searchstr) {
+
+    public DocItem findDocuments(String searchstr)
+    {
         WikiItem current = start;
-        docName = current;
-        WikiItem docNames = null;
+        DocItem docName = new DocItem(current.str, null);
+        DocItem docNames = null;
         while (current != null) {
             if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
             {
@@ -53,15 +72,29 @@ class Index1 {
                     docNameString = docNameString + " " + temp.str;
                     temp = temp.next;
                 }
-                docName = new WikiItem(docNameString, null);
+                docName = new DocItem(docNameString, null);
             }
             if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) {
-                WikiItem temp = new WikiItem(docName.str, docNames);
+                DocItem temp = new DocItem(docName.str, docNames);
                 docNames = temp;
             }
             current = current.next;
         }
         return docNames;
+    }
+ 
+    public DocItem search(String searchstr) 
+    {
+        WikiItem current = start;
+        while (current != null) 
+        {
+            if (current.str.equals(searchstr))
+            {
+                return current.docs;
+            }
+            current = current.next;
+        }  
+        return null;  
     }
  
     public static void main(String[] args) {
@@ -74,7 +107,7 @@ class Index1 {
             if (searchstr.equals("exit")) {
                 break;
             }
-            WikiItem output = i.search(searchstr);
+            DocItem output = i.search(searchstr);
             if (output == null) 
             {
                 System.out.println(searchstr + " does not exist");
