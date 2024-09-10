@@ -49,7 +49,7 @@ class Index1 {
                 WikiItem temp = docNameStart.next;
                 while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
                 {
-                    //System.out.println(docNameString);
+                    // System.out.println(docNameString);
                     docNameString = docNameString + " " + temp.str;
                     temp = temp.next;
                 }
