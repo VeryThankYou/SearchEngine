@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.Scanner;
-import java.util.ArrayList;
  
 class Index1 {
  
@@ -38,17 +37,18 @@ class Index1 {
         }
     }
  
-    public ArrayList<WikiItem> search(String searchstr) {
+    public WikiItem search(String searchstr) {
         WikiItem current = start;
         docName = current;
-        ArrayList<WikiItem> docNames = new ArrayList<WikiItem>();
+        WikiItem docNames = null;
         while (current != null) {
             if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
             {
                 docName = current.next;
             }
-            if ((docNames.size() == 0 || !(docNames.get(docNames.size()-1).str.equals(docName.str))) && current.str.equals(searchstr)) {
-                docNames.add(docName);
+            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) {
+                WikiItem temp = new WikiItem(docName.str, docNames);
+                docNames = temp;
             }
             current = current.next;
         }
@@ -65,16 +65,20 @@ class Index1 {
             if (searchstr.equals("exit")) {
                 break;
             }
-            ArrayList<WikiItem> output = i.search(searchstr);
-            if (output.size() > 0) {
-                System.out.println(searchstr + " exists in the following documents:");
-                for (int i2 = 0; i2 < output.size(); i2++)
-                {
-                    System.out.println(output.get(i2).str);
-                }
-            } else {
+            WikiItem output = i.search(searchstr);
+            if (output == null) 
+            {
                 System.out.println(searchstr + " does not exist");
-            }
+            } else 
+            {
+                System.out.println(searchstr + " exists in the following documents:");
+                while (output != null)
+                {
+                    System.out.println(output.str);
+                    output = output.next;
+                }
+            } 
+            
         }
         console.close();
     }
