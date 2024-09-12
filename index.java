@@ -48,16 +48,42 @@ class Index1 {
             }
             input.close();
             current = start;
+            WikiItem removedDuplicatesStart = new WikiItem(current.str, null, null);
+            WikiItem rdtemp = removedDuplicatesStart;
+            DocItem docs = findDocuments(rdtemp.str);
+            rdtemp.docs = docs;
             while (current != null)
             {
-                DocItem docs = findDocuments(current.str);
-                current.docs = docs;
+                if (stringExists(current.str, removedDuplicatesStart)){
+                    //System.out.println(current.str);
+                } else
+                {
+                    rdtemp.next = new WikiItem(current.str, null, null);
+                    rdtemp = rdtemp.next;
+                    docs = findDocuments(rdtemp.str);
+                    rdtemp.docs = docs;
+                }
                 current = current.next;
             }
+            start = removedDuplicatesStart;
         } catch (FileNotFoundException e) 
         {
             System.out.println("Error reading file " + filename);
         }
+    }
+
+    public boolean stringExists(String str, WikiItem head)
+    {
+        WikiItem temp = head;
+        while (temp != null) 
+        {
+            if (temp.str.equals(str))
+            {
+                return true;
+            }    
+            temp = temp.next;
+        }
+        return false;
     }
 
     public DocItem findDocuments(String searchstr)
