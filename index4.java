@@ -6,7 +6,7 @@ class Index4 {
  
     WikiItem start;
     int [] hashvals;
-    DocItem [] hashTable;
+    WikiItem [] hashTable;
     private class WikiItem {
         String str;
         DocItem docs;
@@ -29,6 +29,12 @@ class Index4 {
             str = s;
             next = n;
         }
+
+        public boolean equals(DocItem d2)
+        {
+            if(str.equals(d2.str)){return true;}
+            return false;
+        }
     }
  
     public Index4(String filename, int[] hashvals) 
@@ -36,7 +42,7 @@ class Index4 {
         String word;
         WikiItem current, tmp;
         this.hashvals = hashvals;
-        hashTable = new DocItem[hashvals[0]];
+        hashTable = new WikiItem[hashvals[0]];
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
             word = input.next();
@@ -59,16 +65,11 @@ class Index4 {
             rdtemp.docs = docs;
             while (current != null)
             {
-                if (stringExists(current.str)){
-                    System.out.println(current.str);
-                } else
-                {
-                    rdtemp.next = new WikiItem(current.str, null, null);
-                    rdtemp = rdtemp.next;
-                    docs = findDocuments(rdtemp.str);
-                    rdtemp.docs = docs;
-                    insertDocItem(rdtemp.str, docs);
-                }
+                rdtemp.next = new WikiItem(current.str, null, null);
+                rdtemp = rdtemp.next;
+                docs = findDocuments(rdtemp.str);
+                rdtemp.docs = docs;
+                insertDocItem(rdtemp.str, docs);
                 current = current.next;
             }
             start = removedDuplicatesStart;
@@ -81,23 +82,38 @@ class Index4 {
     public void insertDocItem(String str, DocItem item)
     {
         int hash_int = hash(str);
-        item.next = hashTable[hash_int];
-        hashTable[hash_int] = item;
-    }
-
-    public boolean stringExists(String str)
-    {
-        int hashedstr = hash(str);
-        DocItem h_item = hashTable[hashedstr];
-        while (h_item != null) 
+        WikiItem word = hashTable[hash_int];
+        boolean not_added_yet_word = true;
+        while (word != null) 
         {
-            if (h_item.str.equals(str))
+            if(word.str == str)
             {
-                return true;
-            }    
-            h_item = h_item.next;
+                DocItem cur = word.docs;
+                boolean not_added_yet = true;
+                while(cur != null)
+                {
+                    if(cur.equals(item))
+                    {
+                        not_added_yet = true;
+                        break;
+                    }
+                    cur = cur.next;
+                }
+                if(not_added_yet)
+                {
+                    item.next = word.docs;
+                    word.docs = item;
+                }
+                not_added_yet_word = false;
+                break;
+            }
+            word = word.next;
         }
-        return false;
+        if(not_added_yet_word)
+            {
+                WikiItem new_word = new WikiItem(str, item, null);
+                hashTable[hash_int] = new_word;
+            }
     }
 
     public DocItem findDocuments(String searchstr)
@@ -131,7 +147,13 @@ class Index4 {
     public DocItem search(String searchstr) 
     {
         int hashint = hash(searchstr);
-        return hashTable[hashint];  
+        WikiItem curr = hashTable[hashint];  
+        while (curr != null) 
+        {
+            if(curr.str.equals(searchstr)){return curr.docs;}
+            curr = curr.next;    
+        }
+        return null;
     }
 
     public int hash(String x)
