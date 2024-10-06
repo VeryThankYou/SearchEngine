@@ -48,31 +48,35 @@ class Index4 {
             word = input.next();
             start = new WikiItem(word, null, null);
             current = start;
+            DocItem current_doc = new DocItem(word, null);
             while (input.hasNext()) 
-            {   // Read all words in input
+            {   
+                // Read all words in input
                 word = input.next();
                 //System.out.println(word);
                 tmp = new WikiItem(word, null, null);
-                current.next = tmp;
-                current = tmp;
+                if (word.equals("---END.OF.DOCUMENT---"))
+                {
+                    if(input.hasNext())
+                    {
+                        String docNameString = input.next();
+                        while (docNameString.charAt(docNameString.length() - 1) !=   '.' && input.hasNext()) 
+                        {
+                            docNameString = docNameString + " " + input.next();
+                        }
+                        current_doc = new DocItem(docNameString, null);
+                        String[] words = docNameString.split(" ");
+                        for(int i = 0; i < words.length; i++)
+                        {
+                            insertDocItem(words[i], current_doc);
+                        }
+                    }
+                    continue;
+                }
+                insertDocItem(word, current_doc);
             }
             input.close();
-            current = start;
-            WikiItem removedDuplicatesStart = new WikiItem(current.str, null, null);
-            WikiItem rdtemp = removedDuplicatesStart;
-            DocItem docs = findDocuments(rdtemp.str);
-            insertDocItem(rdtemp.str, docs);
-            rdtemp.docs = docs;
-            while (current != null)
-            {
-                rdtemp.next = new WikiItem(current.str, null, null);
-                rdtemp = rdtemp.next;
-                docs = findDocuments(rdtemp.str);
-                rdtemp.docs = docs;
-                insertDocItem(rdtemp.str, docs);
-                current = current.next;
-            }
-            start = removedDuplicatesStart;
+            System.out.println(hashTable);
         } catch (FileNotFoundException e) 
         {
             System.out.println("Error reading file " + filename);
@@ -86,21 +90,25 @@ class Index4 {
         boolean not_added_yet_word = true;
         while (word != null) 
         {
-            if(word.str == str)
+            if(word.str.equals(str))
             {
+                //System.out.println(item.str);
                 DocItem cur = word.docs;
                 boolean not_added_yet = true;
                 while(cur != null)
                 {
                     if(cur.equals(item))
                     {
-                        not_added_yet = true;
+                        //System.out.println(item.str);
+                        //System.out.println(cur.str);
+                        not_added_yet = false;
                         break;
                     }
                     cur = cur.next;
                 }
                 if(not_added_yet)
                 {
+                    //System.out.println(item.str);
                     item.next = word.docs;
                     word.docs = item;
                 }
@@ -111,7 +119,8 @@ class Index4 {
         }
         if(not_added_yet_word)
             {
-                WikiItem new_word = new WikiItem(str, item, null);
+                //System.out.println(item.str);
+                WikiItem new_word = new WikiItem(str, item, hashTable[hash_int]);
                 hashTable[hash_int] = new_word;
             }
     }
