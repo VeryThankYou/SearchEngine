@@ -76,7 +76,6 @@ class Index4 {
                 insertDocItem(word, current_doc);
             }
             input.close();
-            System.out.println(hashTable);
         } catch (FileNotFoundException e) 
         {
             System.out.println("Error reading file " + filename);
@@ -88,6 +87,7 @@ class Index4 {
         int hash_int = hash(str);
         WikiItem word = hashTable[hash_int];
         boolean not_added_yet_word = true;
+        DocItem item_copy = new DocItem(item.str, null);
         while (word != null) 
         {
             if(word.str.equals(str))
@@ -109,8 +109,8 @@ class Index4 {
                 if(not_added_yet)
                 {
                     //System.out.println(item.str);
-                    item.next = word.docs;
-                    word.docs = item;
+                    item_copy.next = word.docs;
+                    word.docs = item_copy;
                 }
                 not_added_yet_word = false;
                 break;
@@ -120,7 +120,7 @@ class Index4 {
         if(not_added_yet_word)
             {
                 //System.out.println(item.str);
-                WikiItem new_word = new WikiItem(str, item, hashTable[hash_int]);
+                WikiItem new_word = new WikiItem(str, item_copy, hashTable[hash_int]);
                 hashTable[hash_int] = new_word;
             }
     }
