@@ -182,8 +182,8 @@ class Index4 {
             return ((a2*result + b) % p + p) % p;
         }
  
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) 
+    {    
         int [] hashvals = new int[4];
         hashvals[0] = 98317;
         hashvals[1] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
@@ -212,7 +212,6 @@ class Index4 {
                     output = output.next;
                 }
             } 
-            
         }
         console.close();
     }
