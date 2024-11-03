@@ -1,11 +1,12 @@
-package SearchEngine;
+package application;
 
 
 import java.io.*;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
-class Index4 {
+class Index4 implements OverIndex
+{
  
     WikiItem start;
     int [] hashvals;
@@ -23,24 +24,13 @@ class Index4 {
         }
     }
 
-    private class DocItem {
-        String str;
-        DocItem next;
- 
-        DocItem(String s, DocItem n) 
-        {
-            str = s;
-            next = n;
-        }
-
-        public boolean equals(DocItem d2)
-        {
-            if(str.equals(d2.str)){return true;}
-            return false;
-        }
+    public Index4()
+    {
+        
     }
+    
  
-    public Index4(String filename, int[] hashvals) 
+    public void Build(String filename, int[] hashvals) 
     {
         String word;
         WikiItem current, tmp;
@@ -193,7 +183,8 @@ class Index4 {
         hashvals[2] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
         hashvals[3] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
         System.out.println("Preprocessing " + args[0]);
-        Index4 i = new Index4(args[0], hashvals);
+        Index4 i = new Index4();
+        i.Build(args[0], hashvals);
         Scanner console = new Scanner(System.in);
         for (;;) {
             System.out.println("Input search string or type exit to stop");
