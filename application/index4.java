@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 class Index4 implements OverIndex
 {
- 
+    public static int memoryuse = 0;
     WikiItem start;
     int [] hashvals;
     WikiItem [] hashTable;
@@ -35,19 +35,25 @@ class Index4 implements OverIndex
         String word;
         WikiItem current, tmp;
         this.hashvals = hashvals;
+        memoryuse += 4;
         hashTable = new WikiItem[hashvals[0]];
+        memoryuse += hashvals[0];
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
+            memoryuse += 1;
             word = input.next();
             start = new WikiItem(word, null, null);
+            memoryuse += 1;
             current = start;
             DocItem current_doc = new DocItem(word, null);
+            memoryuse += 1;
             while (input.hasNext()) 
             {   
                 // Read all words in input
                 word = input.next();
                 //System.out.println(word);
                 tmp = new WikiItem(word, null, null);
+                memoryuse += 1;
                 if (word.equals("---END.OF.DOCUMENT---"))
                 {
                     if(input.hasNext())
@@ -58,7 +64,9 @@ class Index4 implements OverIndex
                             docNameString = docNameString + " " + input.next();
                         }
                         current_doc = new DocItem(docNameString, null);
+                        memoryuse += 1;
                         String[] words = docNameString.split(" ");
+                        memoryuse += words.length;
                         for(int i = 0; i < words.length; i++)
                         {
                             insertDocItem(words[i], current_doc);
@@ -78,16 +86,22 @@ class Index4 implements OverIndex
     public void insertDocItem(String str, DocItem item)
     {
         int hash_int = hash(str);
+        memoryuse += 1;
         WikiItem word = hashTable[hash_int];
+        memoryuse += 1;
         boolean not_added_yet_word = true;
+        memoryuse += 1;
         DocItem item_copy = new DocItem(item.str, null);
+        memoryuse += 1;
         while (word != null) 
         {
             if(word.str.equals(str))
             {
                 //System.out.println(item.str);
                 DocItem cur = word.docs;
+                memoryuse += 1;
                 boolean not_added_yet = true;
+                memoryuse += 1;
                 while(cur != null)
                 {
                     if(cur.equals(item))
@@ -114,6 +128,7 @@ class Index4 implements OverIndex
             {
                 //System.out.println(item.str);
                 WikiItem new_word = new WikiItem(str, item_copy, hashTable[hash_int]);
+                memoryuse += 1;
                 hashTable[hash_int] = new_word;
             }
     }
@@ -175,6 +190,11 @@ class Index4 implements OverIndex
             return ((a2*result + b) % p + p) % p;
         }
  
+    public String toString()
+    {
+        return "Index 4";
+    }
+
     public static void main(String[] args) 
     {    
         int [] hashvals = new int[4];
