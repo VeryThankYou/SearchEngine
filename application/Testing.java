@@ -61,6 +61,7 @@ public class Testing
         String[] tests = new String[n];
         float[] bdurations = new float[n];
         float[] sdurations = new float[4*n];
+        int[] mem = new int[n];
         for(int i = 0; i < n; i++)
         {
             String name = "application/documents/Wiki" + Integer.toString(i + 1) + ".txt";
@@ -71,6 +72,8 @@ public class Testing
             sdurations[(4*i)+1] = times[2];
             sdurations[(4*i)+2] = times[3];
             sdurations[(4*i)+3] = times[4];
+            mem[i] = Index4.memoryuse;
+            Index4.memoryuse = 0;
         }
         
         try 
@@ -93,6 +96,10 @@ public class Testing
             myWriter.write("Buildtime " + index.toString() + ":\n");
             myWriter.write(String.join("|", tests) + "\n");
             String temp = Arrays.toString(bdurations).replaceAll(",", "|");
+            temp = temp.replaceAll(" ", "");
+            myWriter.write(temp + "\n");
+            myWriter.write("Memory use: \n");
+            temp = Arrays.toString(mem).replaceAll(",", "|");
             temp = temp.replaceAll(" ", "");
             myWriter.write(temp + "\n");
             myWriter.write("Searchtime " + index.toString() + ":\n");
