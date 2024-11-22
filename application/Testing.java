@@ -57,7 +57,7 @@ public class Testing
 
     public static void writeTests(OverIndex index)
     {
-        int n = 2;
+        int n = 12;
         String[] tests = new String[n];
         float[] bdurations = new float[n];
         float[] sdurations = new float[4*n];
