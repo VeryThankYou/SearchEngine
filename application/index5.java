@@ -174,6 +174,15 @@ class Index5 implements OverIndex
         return currDocItem;
     }
 
+    public DocItem and_or_search(String searchstr) 
+    {
+        int par_counter = 0;
+        for(int i = 0; i < searchstr.length(); i++)
+        {
+            
+        }
+    }
+
     public int hash(String x)
         {
             int p = hashvals[0];
