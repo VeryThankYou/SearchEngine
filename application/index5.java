@@ -34,6 +34,7 @@ class Index5 implements OverIndex
     public void Build(String filename, int[] hashvals) 
     {
         String word;
+        docNames = new ArrayList<>();
         this.hashvals = hashvals;
         memoryuse += 4;
         hashTable = new WikiItem[hashvals[0]];
@@ -91,33 +92,20 @@ class Index5 implements OverIndex
         memoryuse += 1;
         boolean not_added_yet_word = true;
         memoryuse += 1;
-        DocItem item_copy = new DocItem(item.str, null);
         memoryuse += 1;
         while (word != null) 
         {
             if(word.str.equals(str))
             {
                 //System.out.println(item.str);
-                DocItem cur = word.docs;
-                memoryuse += 1;
-                boolean not_added_yet = true;
-                memoryuse += 1;
-                while(cur != null)
+                if(word.docs.contains(docNumber))
                 {
-                    if(cur.equals(item))
-                    {
-                        //System.out.println(item.str);
-                        //System.out.println(cur.str);
-                        not_added_yet = false;
-                        break;
-                    }
-                    cur = cur.next;
+                    not_added_yet_word = false;
                 }
-                if(not_added_yet)
+                else
                 {
                     //System.out.println(item.str);
-                    item_copy.next = word.docs;
-                    word.docs = item_copy;
+                    word.docs.add(docNumber);
                 }
                 not_added_yet_word = false;
                 break;
@@ -127,7 +115,9 @@ class Index5 implements OverIndex
         if(not_added_yet_word)
             {
                 //System.out.println(item.str);
-                WikiItem new_word = new WikiItem(str, item_copy, hashTable[hash_int]);
+                ArrayList<Integer> newDocs = new ArrayList<Integer>();
+                newDocs.add(docNumber);
+                WikiItem new_word = new WikiItem(str, newDocs, hashTable[hash_int]);
                 memoryuse += 1;
                 hashTable[hash_int] = new_word;
             }
@@ -165,12 +155,23 @@ class Index5 implements OverIndex
     {
         int hashint = hash(searchstr);
         WikiItem curr = hashTable[hashint];  
+        ArrayList<Integer> listOfDocs = null;
         while (curr != null) 
         {
-            if(curr.str.equals(searchstr)){return curr.docs;}
+            if(curr.str.equals(searchstr))
+            {
+                listOfDocs = curr.docs;
+                break;
+            }
             curr = curr.next;    
         }
-        return null;
+        DocItem currDocItem = null;
+        for(int i = 0; listOfDocs != null && i < listOfDocs.size(); i++)
+        {
+            DocItem temp = new DocItem(docNames.get(listOfDocs.get(i)), currDocItem);
+            currDocItem = temp;
+        }
+        return currDocItem;
     }
 
     public int hash(String x)
