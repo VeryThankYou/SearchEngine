@@ -5,12 +5,14 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
-class Index5 implements OverIndex
+class Index6 implements OverIndex
 {
     public static int memoryuse = 0;
     WikiItem start;
     int [] hashvals;
     ArrayList<String> docNames;
+    ArrayList<Integer> docLength;
+    int numDocs;
     WikiItem [] hashTable;
     private class WikiItem {
         String str;
@@ -25,7 +27,7 @@ class Index5 implements OverIndex
         }
     }
 
-    public Index5()
+    public Index6()
     {
         
     }
@@ -43,9 +45,12 @@ class Index5 implements OverIndex
             Scanner input = new Scanner(new File(filename), "UTF-8");
             memoryuse += 1;
             word = input.next();
+            numDocs = 1;
             start = new WikiItem(word, null, null);
             memoryuse += 1;
             int current_doc = 0;
+            docLength = new ArrayList<Integer>();
+            docLength.add(1);
             docNames.add(word);
             memoryuse += 1;
             while (input.hasNext()) 
@@ -58,6 +63,7 @@ class Index5 implements OverIndex
                 {
                     if(input.hasNext())
                     {
+                        numDocs += 1;
                         String docNameString = input.next();
                         while (docNameString.charAt(docNameString.length() - 1) !=   '.' && input.hasNext()) 
                         {
@@ -70,11 +76,13 @@ class Index5 implements OverIndex
                         memoryuse += words.length;
                         for(int i = 0; i < words.length; i++)
                         {
+                            docLength.set(current_doc, docLength.get(current_doc) + 1);
                             insertDocItem(words[i], current_doc);
                         }
                     }
                     continue;
                 }
+                docLength.set(current_doc, docLength.get(current_doc) + 1);
                 insertDocItem(word, current_doc);
             }
             input.close();
@@ -335,18 +343,18 @@ class Index5 implements OverIndex
  
     public String toString()
     {
-        return "Index 5";
+        return "Index 6";
     }
 
     public static void main(String[] args) 
-    {    
+    {
         int [] hashvals = new int[4];
         hashvals[0] = 98317;
         hashvals[1] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
         hashvals[2] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
         hashvals[3] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
         System.out.println("Preprocessing " + args[0]);
-        Index5 i = new Index5();
+        Index6 i = new Index6();
         i.Build(args[0], hashvals);
         Scanner console = new Scanner(System.in);
         for (;;) {
