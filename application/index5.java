@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.io.*;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Index5 implements OverIndex
 {
@@ -153,18 +155,7 @@ class Index5 implements OverIndex
  
     public DocItem search(String searchstr) 
     {
-        int hashint = hash(searchstr);
-        WikiItem curr = hashTable[hashint];  
-        ArrayList<Integer> listOfDocs = null;
-        while (curr != null) 
-        {
-            if(curr.str.equals(searchstr))
-            {
-                listOfDocs = curr.docs;
-                break;
-            }
-            curr = curr.next;    
-        }
+        ArrayList<Integer> listOfDocs = and_or_search(searchstr);
         DocItem currDocItem = null;
         for(int i = 0; listOfDocs != null && i < listOfDocs.size(); i++)
         {
@@ -174,13 +165,157 @@ class Index5 implements OverIndex
         return currDocItem;
     }
 
-    public DocItem and_or_search(String searchstr) 
+    public ArrayList<Integer> and_or_search(String searchstr) 
     {
-        int par_counter = 0;
-        for(int i = 0; i < searchstr.length(); i++)
+        int operator_start = 0;
+        int andm1_or1_none0 = 0;
+        boolean start_with_parenthesis = false;
+        if(searchstr.charAt(0) == '(')
         {
-            
+            start_with_parenthesis = true;
+            int par_counter = 1;
+            for(int i = 1; i < searchstr.length(); i++)
+            {
+                if(searchstr.charAt(i) == '(')
+                {
+                    par_counter += 1;
+                }
+                else if(searchstr.charAt(i) == ')')
+                {
+                    par_counter -= 1;
+                }
+                if(par_counter == 0)
+                {
+                    operator_start = i+1;
+                    break;
+                }
+            }
+        } else
+        {
+            for(int i = 0; i < searchstr.length(); i++)
+            {
+                if(searchstr.charAt(i) == '&' || searchstr.charAt(i) == '|')
+                {
+                    if(i + 1 < searchstr.length() && searchstr.charAt(i+1) == searchstr.charAt(i+1))
+                    {
+                        operator_start = i;
+                        break;
+                    }
+                }
+            }
         }
+        
+        if(searchstr.charAt(operator_start) == '&')
+        {
+            andm1_or1_none0 = -1;
+        }
+        else if(searchstr.charAt(operator_start) == '|')
+        {
+            andm1_or1_none0 = 1;
+        } 
+        if(andm1_or1_none0 == 0)
+        {
+            int hashint = hash(searchstr);
+            WikiItem curr = hashTable[hashint];  
+            ArrayList<Integer> listOfDocs = null;
+            while (curr != null) 
+            {
+                if(curr.str.equals(searchstr))
+                {
+                    listOfDocs = curr.docs;
+                }
+                curr = curr.next;    
+            }
+            return listOfDocs;
+        }
+        if(searchstr.charAt(operator_start + 2) == '(')
+        {
+            searchstr = searchstr.substring(0, operator_start+2) + searchstr.substring(operator_start + 3, searchstr.length()-1);
+        }
+        if(start_with_parenthesis)
+        {
+            searchstr = searchstr.substring(1, operator_start - 1) + searchstr.substring(operator_start);
+            operator_start -= 2;
+        }
+        System.out.println(searchstr);
+        System.out.println(operator_start);
+        ArrayList<Integer> searchresult1 = and_or_search(searchstr.substring(0, operator_start));
+        ArrayList<Integer> searchresult2 = and_or_search(searchstr.substring(operator_start + 2));
+        if(andm1_or1_none0 == -1)
+        {
+            return and_search(searchresult1, searchresult2);
+        }
+        return or_search(searchresult1, searchresult2);
+    }
+
+    public ArrayList<Integer> and_search(ArrayList<Integer> res1, ArrayList<Integer> res2)
+    {
+        ArrayList<Integer> res = new ArrayList<Integer>();
+        int i1 = 0;
+        int i2 = 0;
+        while(i1 < res1.size() && i2 < res2.size())
+        {
+            int e1 = res1.get(i1);
+            int e2 = res2.get(i2);
+            if(e1 == e2)
+            {
+                res.add(e1);
+                i1 += 1;
+                i2 += 1;
+            }
+            else if(e1 > e2)
+            {
+                i2 += 1;
+            }
+            else if(e1 < e2)
+            {
+                i1 += 1;
+            }
+        }
+        return res;
+    }
+
+    public ArrayList<Integer> or_search(ArrayList<Integer> res1, ArrayList<Integer> res2)
+    {
+        ArrayList<Integer> res = new ArrayList<Integer>();
+        int i1 = 0;
+        int i2 = 0;
+        while(i1 < res1.size() && i2 < res2.size())
+        {
+            int e1 = res1.get(i1);
+            int e2 = res2.get(i2);
+            if(e1 == e2)
+            {
+                res.add(e1);
+                i1 += 1;
+                i2 += 1;
+            }
+            else if(e1 > e2)
+            {
+                res.add(e2);
+                i2 += 1;
+            }
+            else if(e1 < e2)
+            {
+                res.add(e1);
+                i1 += 1;
+            }
+        }
+        if(i1 < res1.size())
+        {
+            for(int i = i1; i < res1.size(); i++)
+            {
+                res.add(res1.get(i));
+            }
+        }
+        if(i2 < res2.size())
+        {
+            for(int i = i2; i < res2.size(); i++)
+            {
+                res.add(res2.get(i));
+            }
+        }
+        return res;
     }
 
     public int hash(String x)
