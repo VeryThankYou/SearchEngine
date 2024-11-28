@@ -14,16 +14,30 @@ class Index6 implements OverIndex
     ArrayList<Integer> docLength;
     int numDocs;
     WikiItem [] hashTable;
-    private class WikiItem {
+    private class WikiItem 
+    {
         String str;
         ArrayList<Integer> docs;
+        ArrayList<Integer> numInDocs;
         WikiItem next;
  
-        WikiItem(String s, ArrayList<Integer> d, WikiItem n) 
+        WikiItem(String s, ArrayList<Integer> d, ArrayList<Integer> nd, WikiItem n) 
         {
             str = s;
             docs = d;
+            numInDocs = nd;
             next = n;
+        }
+    }
+
+    private class TupleIF 
+    {
+        int i;
+        double d;
+        TupleIF(int newi, double newd) 
+        {
+            i = newi;
+            d = newd;
         }
     }
 
@@ -46,7 +60,7 @@ class Index6 implements OverIndex
             memoryuse += 1;
             word = input.next();
             numDocs = 1;
-            start = new WikiItem(word, null, null);
+            start = new WikiItem(word, null, null, null);
             memoryuse += 1;
             int current_doc = 0;
             docLength = new ArrayList<Integer>();
@@ -64,6 +78,7 @@ class Index6 implements OverIndex
                     if(input.hasNext())
                     {
                         numDocs += 1;
+                        docLength.add(0);
                         String docNameString = input.next();
                         while (docNameString.charAt(docNameString.length() - 1) !=   '.' && input.hasNext()) 
                         {
@@ -108,12 +123,15 @@ class Index6 implements OverIndex
                 //System.out.println(item.str);
                 if(word.docs.contains(docNumber))
                 {
+                    int indexOfDoc = word.docs.indexOf(docNumber);
+                    word.numInDocs.set(indexOfDoc, word.numInDocs.get(indexOfDoc) + 1);
                     not_added_yet_word = false;
                 }
                 else
                 {
                     //System.out.println(item.str);
                     word.docs.add(docNumber);
+                    word.numInDocs.add(1);
                 }
                 not_added_yet_word = false;
                 break;
@@ -125,7 +143,9 @@ class Index6 implements OverIndex
                 //System.out.println(item.str);
                 ArrayList<Integer> newDocs = new ArrayList<Integer>();
                 newDocs.add(docNumber);
-                WikiItem new_word = new WikiItem(str, newDocs, hashTable[hash_int]);
+                ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
+                newNumInDocs.add(1);
+                WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
                 memoryuse += 1;
                 hashTable[hash_int] = new_word;
             }
@@ -162,6 +182,7 @@ class Index6 implements OverIndex
     public DocItem search(String searchstr) 
     {
         ArrayList<Integer> listOfDocs = and_or_search(searchstr);
+
         DocItem currDocItem = null;
         for(int i = 0; listOfDocs != null && i < listOfDocs.size(); i++)
         {
