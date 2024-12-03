@@ -3,7 +3,7 @@ package application;
 import java.io.*;
 import java.util.Scanner;
  
-class Index1 {
+class Index3 {
  
     WikiItem start;
  
@@ -31,7 +31,7 @@ class Index1 {
         }
     }
  
-    public Index1(String filename) 
+    public Index3(String filename) 
     {
         String word;
         WikiItem current, tmp;
@@ -132,7 +132,7 @@ class Index1 {
  
     public static void main(String[] args) {
         System.out.println("Preprocessing " + args[0]);
-        Index1 i = new Index1(args[0]);
+        Index3 i = new Index3(args[0]);
         Scanner console = new Scanner(System.in);
         for (;;) {
             System.out.println("Input search string or type exit to stop");

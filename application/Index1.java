@@ -1,8 +1,10 @@
+package application;
+
 import java.io.*;
 import java.util.Scanner;
  
-class Index1 {
- 
+class Index1 
+{ 
     WikiItem start;
     WikiItem docName;
  
