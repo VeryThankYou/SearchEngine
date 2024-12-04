@@ -3,11 +3,11 @@ package application;
 import java.io.*;
 import java.util.Scanner;
  
-class Index3 {
- 
+class Index3 
+{
     WikiItem start;
- 
-    private class WikiItem {
+    private class WikiItem 
+    {
         String str;
         DocItem docs;
         WikiItem next;
@@ -116,7 +116,7 @@ class Index3 {
         return docNames;
     }
  
-    public DocItem search(String searchstr) 
+    public DocItem search(String searchstr)
     {
         WikiItem current = start;
         while (current != null) 
