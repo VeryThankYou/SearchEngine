@@ -1,6 +1,7 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.*;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -38,6 +39,10 @@ class Index6 implements OverIndex
         {
             i = newi;
             d = newd;
+        }
+        public String toString()
+        {
+            return "(" + Integer.toString(i) + "," + Double.toString(d) + ")";
         }
     }
 
@@ -178,18 +183,108 @@ class Index6 implements OverIndex
         }
         return docNames;
     }
+
+    public double specificLog(double x, int base)
+    {
+        return Math.log(x) / ((double) Math.log(base));
+    }
  
     public DocItem search(String searchstr) 
     {
-        ArrayList<Integer> listOfDocs = and_or_search(searchstr);
-
-        DocItem currDocItem = null;
-        for(int i = 0; listOfDocs != null && i < listOfDocs.size(); i++)
+        int hashint = hash(searchstr);
+        WikiItem curr = hashTable[hashint];  
+        ArrayList<Integer> docs = null;
+        ArrayList<Integer> tfs = null;
+        while (curr != null) 
         {
-            DocItem temp = new DocItem(docNames.get(listOfDocs.get(i)), currDocItem);
-            currDocItem = temp;
+            if(curr.str.equals(searchstr))
+            {
+                docs = curr.docs;
+                tfs = curr.numInDocs;
+                break;
+            }
+            curr = curr.next;    
         }
-        return currDocItem;
+        if(docs != null)
+        {
+            TupleIF[] tfidfs = new TupleIF[docs.size()];
+            for(int i = 0; i < docs.size(); i++)
+            {
+                double tfidf = (double) tfs.get(i) * specificLog((double) (numDocs/docs.size()), 2);
+                tfidfs[i] = new TupleIF(docs.get(i), tfidf);
+            }
+            TupleIF[] sortedTfidfs = mergeSort(tfidfs);
+            DocItem current = null;
+            for(int i = 0; i < sortedTfidfs.length; i++)
+            {
+                System.out.println(sortedTfidfs[i]);
+                DocItem temp = new DocItem(docNames.get(sortedTfidfs[i].i), current);
+                current = temp;
+            }
+            return current;
+        }
+        return null;
+    }
+
+    public TupleIF[] mergeSort(TupleIF[] list)
+    {
+        if(list.length < 2)
+        {
+            return list;
+        }
+        TupleIF[][] splits = split(list);
+        TupleIF[] l1 = mergeSort(splits[0]);
+        TupleIF[] l2 = mergeSort(splits[1]);
+        splits[0] = l1;
+        splits[1] = l2;
+        TupleIF[] merged = merge(splits);
+        return merged;
+    }
+
+    public TupleIF[][] split(TupleIF[] list)
+    {
+        if(list.length < 2)
+        {
+            TupleIF array[] = {};
+            TupleIF[] array2[] = {list, array};
+            return array2;
+        }
+        int L = list.length;
+        int cut = (int) Math.ceil(((double) L)/2);
+        TupleIF array1[] = Arrays.copyOfRange(list, 0, cut);
+        TupleIF array2[] = Arrays.copyOfRange(list, cut, list.length);
+        TupleIF[] result[] = {array1, array2};
+        return result;
+    }
+    public TupleIF[] merge(TupleIF[][] lists)
+    {
+        TupleIF[] l1 = lists[0];
+        TupleIF[] l2 = lists[1];
+        TupleIF[] res = new TupleIF[l1.length + l2.length];
+        int i1 = 0;
+        int i2 = 0;
+        while(i1 < l1.length && i2 < l2.length)
+        {
+            if(l1[i1].d <= l2[i2].d)
+            {
+                res[i1 + i2] = l1[i1];
+                i1 += 1;
+                continue;
+            }
+            res[i1 + i2] = l2[i2];
+            i2 += 1;
+        }
+        while(i1 < l1.length)
+        {
+            res[i1 + i2] = l1[i1];
+            i1 += 1;
+        }
+        while(i2 < l2.length)
+        {
+            res[i1 + i2] = l2[i2];
+            i2 += 1;
+        }
+        return res;
     }
 
     public ArrayList<Integer> and_or_search(String searchstr) 
