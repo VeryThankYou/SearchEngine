@@ -175,7 +175,8 @@ class Index6 implements OverIndex
                 }
                 docName = new DocItem(docNameString, null);
             }
-            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) {
+            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) 
+            {
                 DocItem temp = new DocItem(docName.str, docNames);
                 docNames = temp;
             }
