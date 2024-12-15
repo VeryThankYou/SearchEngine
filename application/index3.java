@@ -38,83 +38,65 @@ class Index3
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
             word = input.next();
-            start = new WikiItem(word, null, null);
+            String curDoc = word;
+            start = new WikiItem(word, new DocItem(curDoc, null), null);
             current = start;
             while (input.hasNext()) 
             {   // Read all words in input
                 word = input.next();
-                //System.out.println(word);
-                tmp = new WikiItem(word, null, null);
-                current.next = tmp;
-                current = tmp;
+                
+                if (word.equals("---END.OF.DOCUMENT---") && input.hasNext())
+                {
+                    System.out.println(curDoc);
+                    String docNameString = input.next();
+                    while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
+                    {
+                        // System.out.println(docNameString);
+                        docNameString = docNameString + " " + input.next();
+                    }
+                    curDoc = docNameString;
+                    String[] docWords = docNameString.split(" ");
+                    for(int i = 0; i < docWords.length; i++)
+                    {
+                        insertDocItem(start, docWords[i], curDoc);
+                    }
+                }
+                insertDocItem(start, word, curDoc);
             }
             input.close();
-            current = start;
-            WikiItem removedDuplicatesStart = new WikiItem(current.str, null, null);
-            WikiItem rdtemp = removedDuplicatesStart;
-            DocItem docs = findDocuments(rdtemp.str);
-            rdtemp.docs = docs;
-            while (current != null)
-            {
-                if (stringExists(current.str, removedDuplicatesStart)){
-                    //System.out.println(current.str);
-                } else
-                {
-                    rdtemp.next = new WikiItem(current.str, null, null);
-                    rdtemp = rdtemp.next;
-                    docs = findDocuments(rdtemp.str);
-                    rdtemp.docs = docs;
-                }
-                current = current.next;
-            }
-            start = removedDuplicatesStart;
         } catch (FileNotFoundException e) 
         {
             System.out.println("Error reading file " + filename);
         }
     }
 
-    public boolean stringExists(String str, WikiItem head)
+    public void insertDocItem(WikiItem head, String word, String docname)
     {
-        WikiItem temp = head;
-        while (temp != null) 
+        WikiItem tmp = head;
+        while (tmp != null) 
         {
-            if (temp.str.equals(str))
+            if(tmp.str.equals(word))
             {
-                return true;
-            }    
-            temp = temp.next;
+                DocItem dtmp = tmp.docs;
+                while (dtmp != null) 
+                {
+                    //System.out.println(dtmp.str);
+                    if(dtmp.str.equals(docname))
+                    {
+                        return;
+                    }
+                    dtmp = dtmp.next;
+                }
+                dtmp = new DocItem(docname, tmp.docs);
+                tmp.docs = dtmp;
+                return;
+            }
+            tmp = tmp.next;
         }
-        return false;
+        WikiItem newtmp = new WikiItem(word, new DocItem(docname, null), head);
+        start = newtmp;
     }
 
-    public DocItem findDocuments(String searchstr)
-    {
-        WikiItem current = start;
-        DocItem docName = new DocItem(current.str, null);
-        DocItem docNames = null;
-        while (current != null) {
-            if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
-            {
-                String docNameString = current.next.str;
-                WikiItem docNameStart = current.next;
-                WikiItem temp = docNameStart.next;
-                while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
-                {
-                    // System.out.println(docNameString);
-                    docNameString = docNameString + " " + temp.str;
-                    temp = temp.next;
-                }
-                docName = new DocItem(docNameString, null);
-            }
-            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) {
-                DocItem temp = new DocItem(docName.str, docNames);
-                docNames = temp;
-            }
-            current = current.next;
-        }
-        return docNames;
-    }
  
     public DocItem search(String searchstr)
     {

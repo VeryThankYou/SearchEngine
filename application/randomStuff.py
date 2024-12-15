@@ -17,12 +17,12 @@ http://www.google.co.uk/imgres?imgurl=http://www.lesmills.co.nz/pt_photos/Chris%
 #stringnum = ''.join(map(str, map(ord, 'faux-mathematical')))
 #print(stringnum)
 
-docuNames = ["documents/Wiki" + str(i) + ".txt" for i in range(1, 13)]
-numDocs = [0 for _ in range(12)]
-numWords = [0 for _ in range(12)]
-sizeDictionary = [set() for _ in range(12)]
-sizeAlphabet = [set() for _ in range(12)]
-
+docuNames = ["application/documents/Wiki" + str(i) + ".txt" for i in range(1, 13)]
+#numDocs = [0 for _ in range(12)]
+#numWords = [0 for _ in range(12)]
+#sizeDictionary = [set() for _ in range(12)]
+#sizeAlphabet = [set() for _ in range(12)]
+numSymbols = [0 for _ in range(12)]
 # number of documents
 # size of dictionary
 # sum of words
@@ -39,14 +39,16 @@ for i, e in enumerate(docuNames):
                 continue
             if word[-1] == "\n":
                 word = word[:-1]
-            if word == "---END.OF.DOCUMENT---":
-                numDocs[i] = 1 + numDocs[i]
-            numWords[i] += 1
-            sizeDictionary[i].add(word)
+            #if word == "---END.OF.DOCUMENT---":
+                #numDocs[i] = 1 + numDocs[i]
+            #numWords[i] += 1
+            #sizeDictionary[i].add(word)
             for char in word:
-                sizeAlphabet[i].add(char)
-file = open("dataInfo.txt", "w")
+                numSymbols[i] += 1
+                #sizeAlphabet[i].add(char)
+file = open("dataInfoSym.txt", "w")
 file.write("Names:\n")
+"""
 for e in docuNames:
     file.write(str(e)+"|")
 file.write("\nNumber of documents:\n")
@@ -61,3 +63,7 @@ for e in sizeDictionary:
 file.write("\nSize of alphabet:\n")
 for e in sizeAlphabet:
     file.write(str(len(e))+"|")
+    """
+for e in numSymbols:
+    file.write(str(e)+"|")
+    
