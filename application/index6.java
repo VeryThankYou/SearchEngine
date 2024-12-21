@@ -453,8 +453,8 @@ class Index6 implements OverIndex
             {
                 char c = x.charAt(i);
                 result += ((int) c) * Math.pow(a1, (l - 1 - i));
+                result = (result % p + p) % p;
             }
-            result = (result % p + p) % p;
             return ((a2*result + b) % p + p) % p;
         }
  
