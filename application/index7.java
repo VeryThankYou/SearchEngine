@@ -46,6 +46,19 @@ class Index7 implements OverIndex
         }
     }
 
+    private class SearchStruct 
+    {
+        int doc;
+        double Wdsum;
+        double Sds;
+        SearchStruct(int newdoc, double newWdsum, double newSds) 
+        {
+            doc = newdoc;
+            Wdsum = newWdsum;
+            Sds = newSds;
+        }
+    }
+
     public Index7()
     {
         
@@ -192,82 +205,24 @@ class Index7 implements OverIndex
  
     public DocItem search(String searchstr) 
     {
-        String phrase = searchstr.replace("&&", " ");
-        phrase = searchstr.replace("||", " ");
-        phrase = searchstr.replace("(", "");
-        phrase = searchstr.replace(")", "");
-        String[] words = phrase.split(" ");
-        String[] unique_words = RDmergeSort(words);
-        ArrayList<ArrayList<Integer>> fdts = new ArrayList<ArrayList<Integer>>(unique_words.length);
-        ArrayList<ArrayList<TupleIF>> wdts = new ArrayList<ArrayList<TupleIF>>(unique_words.length);
-        double[] wqts = new double[unique_words.length];
-        double[] Sds = new double[numDocs];
-        double[] Wdsum = new double[numDocs];
-        ArrayList<ArrayList<Integer>> doclists = new ArrayList<ArrayList<Integer>>(unique_words.length);
-        for(int i = 0; i < unique_words.length; i++)
+        ArrayList<SearchStruct> result = and_or_search(searchstr);
+        TupleIF[] weightedResult = new TupleIF[result.size()];
+        for(int i = 0; i < result.size(); i++)
         {
-            String word = unique_words[i];
-            int hashint = hash(word);
-            WikiItem curr = hashTable[hashint];
-            while (curr != null) 
-            {
-                if(curr.str.equals(word))
-                {
-                    doclists.set(i, curr.docs);
-                    fdts.set(i, curr.numInDocs);
-                    break;
-                }
-                curr = curr.next;    
-            }
-            wqts[i] = Math.log(1.0 + ((float) numDocs)/((float)doclists.get(i).size()));
-            for(int j = 0; j < doclists.size(); j++)
-            {
-                int doc = doclists.get(i).get(j);
-                double w = Math.log(1.0 + fdts.get(i).get(j));
-                wdts.get(i).add(new TupleIF(doc, w));
-                Sds[doc] += wqts[i] * w;
-                Wdsum[doc] += Math.pow(w,2);
-            }
+            SearchStruct element = result.get(i);
+            double Wd = Math.sqrt(element.Wdsum);
+            double finalSd = element.Sds/Wd;
+            weightedResult[i] = new TupleIF(result.get(i).doc, finalSd);
         }
-        for(int i = 0; i < numDocs; i++)
+        TupleIF[] sortedTfidfs = mergeSort(weightedResult);
+        DocItem current = null;
+        for(int i = 0; i < sortedTfidfs.length; i++)
         {
-            Wdsum[i] = Math.sqrt(Wdsum[i]);
-            Sds[i] = Sds[i]/Wdsum[i];
+            System.out.println(sortedTfidfs[i]);
+            DocItem temp = new DocItem(docNames.get(sortedTfidfs[i].i), current);
+            current = temp;
         }
-        ArrayList<TupleIF> Sds = new ArrayList<TupleIF>();
-        int curDocNum = 0;
-        int[] curDocs = new int[unique_words.length];
-        for(int i = 0; i < curDocs.length; i++)
-        {
-            if(doclists.get(i).size() > 1)
-            {
-                curDocs[i] = doclists.get(i).get(0);
-            } 
-            else{curDocs[i] = -1;}
-        }
-        while(true) 
-        {
-            
-        }
-        if(docs != null)
-        {
-            TupleIF[] tfidfs = new TupleIF[docs.size()];
-            for(int i = 0; i < docs.size(); i++)
-            {
-                double tfidf = (double) tfs.get(i) * specificLog((double) (numDocs/docs.size()), 2);
-                tfidfs[i] = new TupleIF(docs.get(i), tfidf);
-            }
-            TupleIF[] sortedTfidfs = mergeSort(tfidfs);
-            DocItem current = null;
-            for(int i = 0; i < sortedTfidfs.length; i++)
-            {
-                System.out.println(sortedTfidfs[i]);
-                DocItem temp = new DocItem(docNames.get(sortedTfidfs[i].i), current);
-                current = temp;
-            }
-            return current;
-        }
-        return null;
+        return current;
     }
 
     public TupleIF[] mergeSort(TupleIF[] list)
@@ -410,7 +365,7 @@ class Index7 implements OverIndex
         return res;
     }
 
-    public ArrayList<Integer> and_or_search(String searchstr) 
+    public ArrayList<SearchStruct> and_or_search(String searchstr) 
     {
         int operator_start = 0;
         int andm1_or1_none0 = 0;
@@ -463,15 +418,26 @@ class Index7 implements OverIndex
             int hashint = hash(searchstr);
             WikiItem curr = hashTable[hashint];  
             ArrayList<Integer> listOfDocs = null;
+            ArrayList<Integer> fdts = null;
             while (curr != null) 
             {
                 if(curr.str.equals(searchstr))
                 {
                     listOfDocs = curr.docs;
+                    fdts = curr.numInDocs;
+                    break;
                 }
                 curr = curr.next;    
             }
-            return listOfDocs;
+            ArrayList<SearchStruct> res = new ArrayList<SearchStruct>();
+            for(int i = 0; i < listOfDocs.size(); i++)
+            {
+                double wdt = 1.0 + Math.log(fdts.get(i));
+                double wqt = Math.log(1.0 + ((double)numDocs)/((double)fdts.size()));
+                SearchStruct s = new SearchStruct(listOfDocs.get(i), wdt*wqt, wdt*wdt);
+                res.add(s);
+            }
+            return res;
         }
         if(searchstr.charAt(operator_start + 2) == '(')
         {
@@ -484,8 +450,8 @@ class Index7 implements OverIndex
         }
         System.out.println(searchstr);
         System.out.println(operator_start);
-        ArrayList<Integer> searchresult1 = and_or_search(searchstr.substring(0, operator_start));
-        ArrayList<Integer> searchresult2 = and_or_search(searchstr.substring(operator_start + 2));
+        ArrayList<SearchStruct> searchresult1 = and_or_search(searchstr.substring(0, operator_start));
+        ArrayList<SearchStruct> searchresult2 = and_or_search(searchstr.substring(operator_start + 2));
         if(andm1_or1_none0 == -1)
         {
             return and_search(searchresult1, searchresult2);
@@ -493,18 +459,21 @@ class Index7 implements OverIndex
         return or_search(searchresult1, searchresult2);
     }
 
-    public ArrayList<Integer> and_search(ArrayList<Integer> res1, ArrayList<Integer> res2)
+    public ArrayList<SearchStruct> and_search(ArrayList<SearchStruct> res1, ArrayList<SearchStruct> res2)
     {
-        ArrayList<Integer> res = new ArrayList<Integer>();
+        ArrayList<SearchStruct> res = new ArrayList<SearchStruct>();
         int i1 = 0;
         int i2 = 0;
         while(i1 < res1.size() && i2 < res2.size())
         {
-            int e1 = res1.get(i1);
-            int e2 = res2.get(i2);
+            int e1 = res1.get(i1).doc;
+            int e2 = res2.get(i2).doc;
             if(e1 == e2)
             {
-                res.add(e1);
+                SearchStruct temp = res1.get(i1);
+                temp.Sds += res2.get(i2).Sds;
+                temp.Wdsum += res2.get(i2).Sds;
+                res.add(temp);
                 i1 += 1;
                 i2 += 1;
             }
@@ -520,29 +489,32 @@ class Index7 implements OverIndex
         return res;
     }
 
-    public ArrayList<Integer> or_search(ArrayList<Integer> res1, ArrayList<Integer> res2)
+    public ArrayList<SearchStruct> or_search(ArrayList<SearchStruct> res1, ArrayList<SearchStruct> res2)
     {
-        ArrayList<Integer> res = new ArrayList<Integer>();
+        ArrayList<SearchStruct> res = new ArrayList<SearchStruct>();
         int i1 = 0;
         int i2 = 0;
         while(i1 < res1.size() && i2 < res2.size())
         {
-            int e1 = res1.get(i1);
-            int e2 = res2.get(i2);
+            int e1 = res1.get(i1).doc;
+            int e2 = res2.get(i2).doc;
             if(e1 == e2)
             {
-                res.add(e1);
+                SearchStruct temp = res1.get(i1);
+                temp.Sds += res2.get(i2).Sds;
+                temp.Wdsum += res2.get(i2).Sds;
+                res.add(temp);
                 i1 += 1;
                 i2 += 1;
             }
             else if(e1 > e2)
             {
-                res.add(e2);
+                res.add(res2.get(i2));
                 i2 += 1;
             }
             else if(e1 < e2)
             {
-                res.add(e1);
+                res.add(res1.get(i1));
                 i1 += 1;
             }
         }
