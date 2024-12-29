@@ -51,7 +51,11 @@ class Index6 implements OverIndex
         
     }
     
- 
+    public int memoryuse()
+    {
+        return memoryuse;
+    }
+
     public void Build(String filename, int[] hashvals) 
     {
         String word;
@@ -62,7 +66,6 @@ class Index6 implements OverIndex
         memoryuse += hashvals[0];
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
-            memoryuse += 1;
             word = input.next();
             numDocs = 1;
             start = new WikiItem(word, null, null, null);
@@ -93,7 +96,6 @@ class Index6 implements OverIndex
                         current_doc += 1;
                         memoryuse += 1;
                         String[] words = docNameString.split(" ");
-                        memoryuse += words.length;
                         for(int i = 0; i < words.length; i++)
                         {
                             docLength.set(current_doc, docLength.get(current_doc) + 1);
@@ -115,12 +117,8 @@ class Index6 implements OverIndex
     public void insertDocItem(String str, int docNumber)
     {
         int hash_int = hash(str);
-        memoryuse += 1;
         WikiItem word = hashTable[hash_int];
-        memoryuse += 1;
         boolean not_added_yet_word = true;
-        memoryuse += 1;
-        memoryuse += 1;
         while (word != null) 
         {
             if(word.str.equals(str))
@@ -137,6 +135,7 @@ class Index6 implements OverIndex
                     //System.out.println(item.str);
                     word.docs.add(docNumber);
                     word.numInDocs.add(1);
+                    memoryuse += 1;
                 }
                 not_added_yet_word = false;
                 break;
@@ -148,41 +147,15 @@ class Index6 implements OverIndex
                 //System.out.println(item.str);
                 ArrayList<Integer> newDocs = new ArrayList<Integer>();
                 newDocs.add(docNumber);
+                memoryuse += 1;
                 ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
                 newNumInDocs.add(1);
+                memoryuse += 1;
                 WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
                 memoryuse += 1;
                 hashTable[hash_int] = new_word;
+                memoryuse += 1;
             }
-    }
-
-    public DocItem findDocuments(String searchstr)
-    {
-        WikiItem current = start;
-        DocItem docName = new DocItem(current.str, null);
-        DocItem docNames = null;
-        while (current != null) {
-            if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
-            {
-                String docNameString = current.next.str;
-                WikiItem docNameStart = current.next;
-                WikiItem temp = docNameStart.next;
-                while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
-                {
-                    // System.out.println(docNameString);
-                    docNameString = docNameString + " " + temp.str;
-                    temp = temp.next;
-                }
-                docName = new DocItem(docNameString, null);
-            }
-            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) 
-            {
-                DocItem temp = new DocItem(docName.str, docNames);
-                docNames = temp;
-            }
-            current = current.next;
-        }
-        return docNames;
     }
 
     public double specificLog(double x, int base)
@@ -460,7 +433,7 @@ class Index6 implements OverIndex
  
     public String toString()
     {
-        return "Index 6";
+        return "Index6";
     }
 
     public static void main(String[] args) 

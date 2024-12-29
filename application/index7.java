@@ -75,7 +75,6 @@ class Index7 implements OverIndex
         memoryuse += hashvals[0];
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
-            memoryuse += 1;
             word = input.next();
             numDocs = 1;
             start = new WikiItem(word, null, null, null);
@@ -90,13 +89,13 @@ class Index7 implements OverIndex
                 // Read all words in input
                 word = input.next();
                 //System.out.println(word);
-                memoryuse += 1;
                 if (word.equals("---END.OF.DOCUMENT---"))
                 {
                     if(input.hasNext())
                     {
                         numDocs += 1;
                         docLength.add(0);
+                        memoryuse += 1;
                         String docNameString = input.next();
                         while (docNameString.charAt(docNameString.length() - 1) !=   '.' && input.hasNext()) 
                         {
@@ -106,7 +105,6 @@ class Index7 implements OverIndex
                         current_doc += 1;
                         memoryuse += 1;
                         String[] words = docNameString.split(" ");
-                        memoryuse += words.length;
                         for(int i = 0; i < words.length; i++)
                         {
                             docLength.set(current_doc, docLength.get(current_doc) + 1);
@@ -125,15 +123,17 @@ class Index7 implements OverIndex
         }
     }
 
+    public int memoryuse()
+    {
+        return memoryuse;
+    }
+
     public void insertDocItem(String str, int docNumber)
     {
         int hash_int = hash(str);
-        memoryuse += 1;
         WikiItem word = hashTable[hash_int];
         memoryuse += 1;
         boolean not_added_yet_word = true;
-        memoryuse += 1;
-        memoryuse += 1;
         while (word != null) 
         {
             if(word.str.equals(str))
@@ -143,6 +143,7 @@ class Index7 implements OverIndex
                 {
                     int indexOfDoc = word.docs.indexOf(docNumber);
                     word.numInDocs.set(indexOfDoc, word.numInDocs.get(indexOfDoc) + 1);
+                    memoryuse += 1;
                     not_added_yet_word = false;
                 }
                 else
@@ -150,6 +151,7 @@ class Index7 implements OverIndex
                     //System.out.println(item.str);
                     word.docs.add(docNumber);
                     word.numInDocs.add(1);
+                    memoryuse += 1;
                 }
                 not_added_yet_word = false;
                 break;
@@ -161,41 +163,17 @@ class Index7 implements OverIndex
                 //System.out.println(item.str);
                 ArrayList<Integer> newDocs = new ArrayList<Integer>();
                 newDocs.add(docNumber);
+                memoryuse += 1;
+                memoryuse += 1;
                 ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
                 newNumInDocs.add(1);
+                memoryuse += 1;
+                memoryuse += 1;
                 WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
                 memoryuse += 1;
                 hashTable[hash_int] = new_word;
+                memoryuse += 1;
             }
-    }
-
-    public DocItem findDocuments(String searchstr)
-    {
-        WikiItem current = start;
-        DocItem docName = new DocItem(current.str, null);
-        DocItem docNames = null;
-        while (current != null) {
-            if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
-            {
-                String docNameString = current.next.str;
-                WikiItem docNameStart = current.next;
-                WikiItem temp = docNameStart.next;
-                while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
-                {
-                    // System.out.println(docNameString);
-                    docNameString = docNameString + " " + temp.str;
-                    temp = temp.next;
-                }
-                docName = new DocItem(docNameString, null);
-            }
-            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) 
-            {
-                DocItem temp = new DocItem(docName.str, docNames);
-                docNames = temp;
-            }
-            current = current.next;
-        }
-        return docNames;
     }
 
     public double specificLog(double x, int base)
@@ -286,84 +264,7 @@ class Index7 implements OverIndex
         return res;
     }
 
-    public String[] RDmergeSort(String[] list)
-    {
-        if(list.length < 2)
-        {
-            return list;
-        }
-        String[][] splits = RDsplit(list);
-        String[] l1 = RDmergeSort(splits[0]);
-        String[] l2 = RDmergeSort(splits[1]);
-        splits[0] = l1;
-        splits[1] = l2;
-        String[] merged = RDmerge(splits);
-        return merged;
-    }
-
-    public String[][] RDsplit(String[] list)
-    {
-        if(list.length < 2)
-        {
-            String array[] = {};
-            String[] array2[] = {list, array};
-            return array2;
-        }
-        int L = list.length;
-        int cut = (int) Math.ceil(((double) L)/2);
-        String array1[] = Arrays.copyOfRange(list, 0, cut);
-        String array2[] = Arrays.copyOfRange(list, cut, list.length);
-        String[] result[] = {array1, array2};
-        return result;
-    }
-    public String[] RDmerge(String[][] lists)
-    {
-        String[] l1 = lists[0];
-        String[] l2 = lists[1];
-        String[] res = new String[l1.length + l2.length];
-        int i1 = 0;
-        int i2 = 0;
-        int count = 0;
-        while(i1 < l1.length && i2 < l2.length)
-        {
-            if(l1[i1].compareTo(l2[i2]) == 0)
-            {
-                res[i1 + i2] = l1[i1];
-                i1 += 1;
-                i2 += 1;
-                count += 1;
-                continue;
-            }
-            else if(l1[i1].compareTo(l2[i2]) < 0)
-            {
-                res[i1 + i2] = l1[i1];
-                i1 += 1;
-                count += 1;
-                continue;
-            }
-            else
-            {
-                res[i1 + i2] = l2[i2];
-                i2 += 1;
-                count += 1;
-                continue;
-            }
-        }
-        while(i1 < l1.length)
-        {
-            res[i1 + i2] = l1[i1];
-            i1 += 1;
-            count += 1;
-        }
-        while(i2 < l2.length)
-        {
-            res[i1 + i2] = l2[i2];
-            i2 += 1;
-            count += 1;
-        }
-        res = Arrays.copyOfRange(res, 0, count);
-        return res;
-    }
+    
 
     public ArrayList<SearchStruct> and_or_search(String searchstr) 
     {
@@ -554,7 +455,7 @@ class Index7 implements OverIndex
  
     public String toString()
     {
-        return "Index 6";
+        return "Index7";
     }
 
     public static void main(String[] args) 

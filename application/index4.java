@@ -29,11 +29,14 @@ class Index4 implements OverIndex
         
     }
     
- 
+    public int memoryuse()
+    {
+        return memoryuse;
+    }
+
     public void Build(String filename, int[] hashvals) 
     {
         String word;
-        WikiItem current, tmp;
         this.hashvals = hashvals;
         memoryuse += 4;
         hashTable = new WikiItem[hashvals[0]];
@@ -44,7 +47,6 @@ class Index4 implements OverIndex
             word = input.next();
             start = new WikiItem(word, null, null);
             memoryuse += 1;
-            current = start;
             DocItem current_doc = new DocItem(word, null);
             memoryuse += 1;
             while (input.hasNext()) 
@@ -52,7 +54,6 @@ class Index4 implements OverIndex
                 // Read all words in input
                 word = input.next();
                 //System.out.println(word);
-                tmp = new WikiItem(word, null, null);
                 memoryuse += 1;
                 if (word.equals("---END.OF.DOCUMENT---"))
                 {
@@ -66,7 +67,6 @@ class Index4 implements OverIndex
                         current_doc = new DocItem(docNameString, null);
                         memoryuse += 1;
                         String[] words = docNameString.split(" ");
-                        memoryuse += words.length;
                         for(int i = 0; i < words.length; i++)
                         {
                             insertDocItem(words[i], current_doc);
@@ -86,11 +86,8 @@ class Index4 implements OverIndex
     public void insertDocItem(String str, DocItem item)
     {
         int hash_int = hash(str);
-        memoryuse += 1;
         WikiItem word = hashTable[hash_int];
-        memoryuse += 1;
         boolean not_added_yet_word = true;
-        memoryuse += 1;
         DocItem item_copy = new DocItem(item.str, null);
         memoryuse += 1;
         while (word != null) 
@@ -101,7 +98,6 @@ class Index4 implements OverIndex
                 DocItem cur = word.docs;
                 memoryuse += 1;
                 boolean not_added_yet = true;
-                memoryuse += 1;
                 while(cur != null)
                 {
                     if(cur.equals(item))
@@ -117,6 +113,7 @@ class Index4 implements OverIndex
                 {
                     //System.out.println(item.str);
                     item_copy.next = word.docs;
+                    memoryuse += 1;
                     word.docs = item_copy;
                 }
                 not_added_yet_word = false;
@@ -130,35 +127,8 @@ class Index4 implements OverIndex
                 WikiItem new_word = new WikiItem(str, item_copy, hashTable[hash_int]);
                 memoryuse += 1;
                 hashTable[hash_int] = new_word;
+                memoryuse += 1;
             }
-    }
-
-    public DocItem findDocuments(String searchstr)
-    {
-        WikiItem current = start;
-        DocItem docName = new DocItem(current.str, null);
-        DocItem docNames = null;
-        while (current != null) {
-            if (current.str.equals("---END.OF.DOCUMENT---") && current.next != null)
-            {
-                String docNameString = current.next.str;
-                WikiItem docNameStart = current.next;
-                WikiItem temp = docNameStart.next;
-                while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
-                {
-                    // System.out.println(docNameString);
-                    docNameString = docNameString + " " + temp.str;
-                    temp = temp.next;
-                }
-                docName = new DocItem(docNameString, null);
-            }
-            if ((docNames == null || !(docNames.str.equals(docName.str))) && current.str.equals(searchstr)) {
-                DocItem temp = new DocItem(docName.str, docNames);
-                docNames = temp;
-            }
-            current = current.next;
-        }
-        return docNames;
     }
  
     public DocItem search(String searchstr) 
@@ -192,7 +162,7 @@ class Index4 implements OverIndex
  
     public String toString()
     {
-        return "Index 4";
+        return "Index4";
     }
 
     public static void main(String[] args) 

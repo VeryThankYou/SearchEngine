@@ -3,9 +3,10 @@ package application;
 import java.io.*;
 import java.util.Scanner;
  
-class Index3 
+class Index3 implements OverIndex
 {
     WikiItem start;
+    int memoryuse;
     private class WikiItem 
     {
         String str;
@@ -19,36 +20,40 @@ class Index3
             next = n;
         }
     }
+ 
+    public Index3()
+    {
 
-    private class DocItem {
-        String str;
-        DocItem next;
- 
-        DocItem(String s, DocItem n) 
-        {
-            str = s;
-            next = n;
-        }
     }
- 
-    public Index3(String filename) 
+
+    public String toString()
+    {
+        return "Index3";
+    }
+
+    public int memoryuse()
+    {
+        return memoryuse;
+    }
+
+    public void Build(String filename, int[] hashvals) 
     {
         String word;
-        WikiItem current, tmp;
         try {
             Scanner input = new Scanner(new File(filename), "UTF-8");
             word = input.next();
             String curDoc = word;
             start = new WikiItem(word, new DocItem(curDoc, null), null);
-            current = start;
+            memoryuse += 1;
             while (input.hasNext()) 
             {   // Read all words in input
                 word = input.next();
                 
                 if (word.equals("---END.OF.DOCUMENT---") && input.hasNext())
                 {
-                    System.out.println(curDoc);
+                    // System.out.println(curDoc);
                     String docNameString = input.next();
+                    memoryuse += 1;
                     while (docNameString.charAt(docNameString.length() - 1) !=   '.') 
                     {
                         // System.out.println(docNameString);
@@ -88,12 +93,15 @@ class Index3
                     dtmp = dtmp.next;
                 }
                 dtmp = new DocItem(docname, tmp.docs);
+                memoryuse += 1;
                 tmp.docs = dtmp;
+                memoryuse += 1;
                 return;
             }
             tmp = tmp.next;
         }
         WikiItem newtmp = new WikiItem(word, new DocItem(docname, null), head);
+        memoryuse += 1;
         start = newtmp;
     }
 
@@ -114,7 +122,8 @@ class Index3
  
     public static void main(String[] args) {
         System.out.println("Preprocessing " + args[0]);
-        Index3 i = new Index3(args[0]);
+        Index3 i = new Index3();
+        i.Build(args[0], null);
         Scanner console = new Scanner(System.in);
         for (;;) {
             System.out.println("Input search string or type exit to stop");
