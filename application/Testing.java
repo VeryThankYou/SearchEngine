@@ -57,7 +57,7 @@ public class Testing
             }
             
             mem = index.memoryuse();
-            Index4.memoryuse = 0;
+            index.resetMemoryuse();
             try 
             {
                 File myObj = new File("Testing/TimeTesting" + index.toString() + "f" + Integer.toString(i + 1) + ".txt");
@@ -99,7 +99,7 @@ public class Testing
 
     public static void main(String[] args)
     {
-        OverIndex i = new Index3();
+        OverIndex i = new Index4();
         writeTests(i);
     }
 }

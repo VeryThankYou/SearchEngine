@@ -26,6 +26,11 @@ class Index3 implements OverIndex
 
     }
 
+    public void resetMemoryuse()
+    {
+        memoryuse = 0;
+    }
+
     public String toString()
     {
         return "Index3";

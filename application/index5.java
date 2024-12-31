@@ -29,6 +29,11 @@ class Index5 implements OverIndex
     {
         
     }
+
+    public void resetMemoryuse()
+    {
+        memoryuse = 0;
+    }
     
     public int memoryuse()
     {

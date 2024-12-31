@@ -63,6 +63,11 @@ class Index7 implements OverIndex
     {
         
     }
+
+    public void resetMemoryuse()
+    {
+        memoryuse = 0;
+    }
     
  
     public void Build(String filename, int[] hashvals) 

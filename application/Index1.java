@@ -19,6 +19,11 @@ class Index1 implements OverIndex
         }
     }
 
+    public void resetMemoryuse()
+    {
+        memoryuse = 0;
+    }
+    
     public int memoryuse()
     {
         return memoryuse;
