@@ -87,7 +87,6 @@ class Index4 implements OverIndex
     {
         int hash_int = hash(str);
         WikiItem word = hashTable[hash_int];
-        boolean not_added_yet_word = true;
         DocItem item_copy = new DocItem(item.str, null);
         memoryuse += 1;
         while (word != null) 
@@ -97,38 +96,22 @@ class Index4 implements OverIndex
                 //System.out.println(item.str);
                 DocItem cur = word.docs;
                 memoryuse += 1;
-                boolean not_added_yet = true;
-                while(cur != null)
+
+                if(cur.equals(item))
                 {
-                    if(cur.equals(item))
-                    {
-                        //System.out.println(item.str);
-                        //System.out.println(cur.str);
-                        not_added_yet = false;
-                        break;
-                    }
-                    cur = cur.next;
+                    return;
                 }
-                if(not_added_yet)
-                {
-                    //System.out.println(item.str);
-                    item_copy.next = word.docs;
-                    memoryuse += 1;
-                    word.docs = item_copy;
-                }
-                not_added_yet_word = false;
-                break;
+                item_copy.next = word.docs;
+                memoryuse += 1;
+                word.docs = item_copy;
+                return;
             }
             word = word.next;
         }
-        if(not_added_yet_word)
-            {
-                //System.out.println(item.str);
-                WikiItem new_word = new WikiItem(str, item_copy, hashTable[hash_int]);
-                memoryuse += 1;
-                hashTable[hash_int] = new_word;
-                memoryuse += 1;
-            }
+        WikiItem new_word = new WikiItem(str, item_copy, hashTable[hash_int]);
+        memoryuse += 1;
+        hashTable[hash_int] = new_word;
+        memoryuse += 1;   
     }
  
     public DocItem search(String searchstr) 

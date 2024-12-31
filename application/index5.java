@@ -95,32 +95,25 @@ class Index5 implements OverIndex
             if(word.str.equals(str))
             {
                 //System.out.println(item.str);
-                if(word.docs.contains(docNumber))
+                if(word.docs.get(word.docs.size() - 1) == docNumber)
                 {
-                    not_added_yet_word = false;
+                    return;
                 }
-                else
-                {
-                    //System.out.println(item.str);
-                    word.docs.add(docNumber);
-                    memoryuse += 1;
-                }
-                not_added_yet_word = false;
-                break;
+                //System.out.println(item.str);
+                word.docs.add(docNumber);
+                memoryuse += 1;
+                return;
             }
             word = word.next;
         }
-        if(not_added_yet_word)
-            {
-                //System.out.println(item.str);
-                ArrayList<Integer> newDocs = new ArrayList<Integer>();
-                newDocs.add(docNumber);
-                memoryuse += 1;
-                WikiItem new_word = new WikiItem(str, newDocs, hashTable[hash_int]);
-                memoryuse += 1;
-                hashTable[hash_int] = new_word;
-                memoryuse += 1;
-            }
+        //System.out.println(item.str);
+        ArrayList<Integer> newDocs = new ArrayList<Integer>();
+        newDocs.add(docNumber);
+        memoryuse += 1;
+        WikiItem new_word = new WikiItem(str, newDocs, hashTable[hash_int]);
+        memoryuse += 1;
+        hashTable[hash_int] = new_word;
+        memoryuse += 1;
     }
 
     
