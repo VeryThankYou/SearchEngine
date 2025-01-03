@@ -52,25 +52,6 @@ public class HashTest
             {   
                 // Read all words in input
                 word = input.next();
-                //System.out.println(word);
-                if (word.equals("---END.OF.DOCUMENT---"))
-                {
-                    if(input.hasNext())
-                    {
-                        String docNameString = input.next();
-                        while (docNameString.charAt(docNameString.length() - 1) !=   '.' && input.hasNext()) 
-                        {
-                            docNameString = docNameString + " " + input.next();
-                        }
-                        current_doc += 1;
-                        String[] words = docNameString.split(" ");
-                        for(int i = 0; i < words.length; i++)
-                        {
-                            insertDocItem(words[i], current_doc);
-                        }
-                    }
-                    continue;
-                }
                 insertDocItem(word, current_doc);
             }
             input.close();
@@ -84,7 +65,6 @@ public class HashTest
     {
         int hash_int = hash(str);
         WikiItem word = hashTable[hash_int];
-        boolean not_added_yet_word = true;
         while (word != null) 
         {
             if(word.str.equals(str))
