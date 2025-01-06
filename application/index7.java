@@ -138,47 +138,33 @@ class Index7 implements OverIndex
         int hash_int = hash(str);
         WikiItem word = hashTable[hash_int];
         memoryuse += 1;
-        boolean not_added_yet_word = true;
         while (word != null) 
         {
             if(word.str.equals(str))
             {
                 //System.out.println(item.str);
-                if(word.docs.contains(docNumber))
+                if(word.docs.get(word.docs.size() - 1) == docNumber)
                 {
-                    int indexOfDoc = word.docs.indexOf(docNumber);
-                    word.numInDocs.set(indexOfDoc, word.numInDocs.get(indexOfDoc) + 1);
-                    memoryuse += 1;
-                    not_added_yet_word = false;
+                    word.numInDocs.set(word.docs.size() - 1, word.numInDocs.get(word.docs.size() - 1) + 1);
+                    return;
                 }
-                else
-                {
-                    //System.out.println(item.str);
-                    word.docs.add(docNumber);
-                    word.numInDocs.add(1);
-                    memoryuse += 1;
-                }
-                not_added_yet_word = false;
-                break;
+                word.docs.add(docNumber);
+                word.numInDocs.add(1);
+                memoryuse += 1;
+                return;
             }
             word = word.next;
         }
-        if(not_added_yet_word)
-            {
-                //System.out.println(item.str);
-                ArrayList<Integer> newDocs = new ArrayList<Integer>();
-                newDocs.add(docNumber);
-                memoryuse += 1;
-                memoryuse += 1;
-                ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
-                newNumInDocs.add(1);
-                memoryuse += 1;
-                memoryuse += 1;
-                WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
-                memoryuse += 1;
-                hashTable[hash_int] = new_word;
-                memoryuse += 1;
-            }
+        ArrayList<Integer> newDocs = new ArrayList<Integer>();
+        newDocs.add(docNumber);
+        memoryuse += 1;
+        ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
+        newNumInDocs.add(1);
+        memoryuse += 1;
+        WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
+        memoryuse += 1;
+        hashTable[hash_int] = new_word;
+        memoryuse += 1;
     }
 
     public double specificLog(double x, int base)
@@ -201,7 +187,7 @@ class Index7 implements OverIndex
         DocItem current = null;
         for(int i = 0; i < sortedTfidfs.length; i++)
         {
-            System.out.println(sortedTfidfs[i]);
+            //System.out.println(sortedTfidfs[i]);
             DocItem temp = new DocItem(docNames.get(sortedTfidfs[i].i), current);
             current = temp;
         }
@@ -323,7 +309,7 @@ class Index7 implements OverIndex
         {
             int hashint = hash(searchstr);
             WikiItem curr = hashTable[hashint];  
-            ArrayList<Integer> listOfDocs = null;
+            ArrayList<Integer> listOfDocs = new ArrayList<Integer>();;
             ArrayList<Integer> fdts = null;
             while (curr != null) 
             {
@@ -354,8 +340,6 @@ class Index7 implements OverIndex
             searchstr = searchstr.substring(1, operator_start - 1) + searchstr.substring(operator_start);
             operator_start -= 2;
         }
-        System.out.println(searchstr);
-        System.out.println(operator_start);
         ArrayList<SearchStruct> searchresult1 = and_or_search(searchstr.substring(0, operator_start));
         ArrayList<SearchStruct> searchresult2 = and_or_search(searchstr.substring(operator_start + 2));
         if(andm1_or1_none0 == -1)

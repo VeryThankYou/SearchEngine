@@ -1,14 +1,5 @@
-
-
-
-dictionary = set()
-# sum of words
-S = 0
-# number of documents
-M = 0
-# number of symbols?
-I = 0
-
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Longest word: link to some image:
 """
@@ -17,53 +8,33 @@ http://www.google.co.uk/imgres?imgurl=http://www.lesmills.co.nz/pt_photos/Chris%
 #stringnum = ''.join(map(str, map(ord, 'faux-mathematical')))
 #print(stringnum)
 
-docuNames = ["application/documents/Wiki" + str(i) + ".txt" for i in range(1, 13)]
-#numDocs = [0 for _ in range(12)]
-#numWords = [0 for _ in range(12)]
-#sizeDictionary = [set() for _ in range(12)]
-#sizeAlphabet = [set() for _ in range(12)]
-numSymbols = [0 for _ in range(12)]
-# number of documents
-# size of dictionary
-# sum of words
-# input string
-# hashtable prime??
+file = open("HashSize11.txt", encoding="utf-8")
+lines = file.readlines()
+file.close()
+uniqueWords = int(lines[0])
+hashDistribution = [int(e) for e in lines[1].split("|")]
+indexes = [i for i in range(len(hashDistribution))]
+avg = [uniqueWords/len(hashDistribution) for _ in range(len(hashDistribution))]
+plt.plot(indexes, hashDistribution, '.', label="Hash distribution")
+plt.plot(indexes, avg, '--', label="Uniform distribution")
+plt.xlabel("Hashtable index")
+plt.ylabel("Words at index")
+plt.legend()
+plt.show()
 
-for i, e in enumerate(docuNames):
-    file = open(e, encoding="utf-8")
-    lines = file.readlines()
-    file.close()
-    for line in lines:
-        for word in line.split(" "):
-            if len(word) == 0:
-                continue
-            if word[-1] == "\n":
-                word = word[:-1]
-            #if word == "---END.OF.DOCUMENT---":
-                #numDocs[i] = 1 + numDocs[i]
-            #numWords[i] += 1
-            #sizeDictionary[i].add(word)
-            for char in word:
-                numSymbols[i] += 1
-                #sizeAlphabet[i].add(char)
-file = open("dataInfoSym.txt", "w")
-file.write("Names:\n")
-"""
-for e in docuNames:
-    file.write(str(e)+"|")
-file.write("\nNumber of documents:\n")
-for e in numDocs:
-    file.write(str(e)+"|")
-file.write("\nNumber of words:\n")
-for e in numWords:
-    file.write(str(e)+"|")
-file.write("\nSize of dictionaries:\n")
-for e in sizeDictionary:
-    file.write(str(len(e))+"|")
-file.write("\nSize of alphabet:\n")
-for e in sizeAlphabet:
-    file.write(str(len(e))+"|")
-    """
-for e in numSymbols:
-    file.write(str(e)+"|")
-    
+
+cumDist = []
+cumavg = []
+for i in range(len(hashDistribution)):
+    if i == 0:
+        cumDist.append(hashDistribution[i])
+        cumavg.append(avg[i])
+    else:
+        cumDist.append(hashDistribution[i] + cumDist[i-1])
+        cumavg.append(avg[i] + cumavg[i-1])
+plt.plot(indexes, cumDist, label="Cumulative hash distribution")
+plt.plot(indexes, cumavg, '--', label="Cumulative uniform distribution")
+plt.xlabel("Hashtable index")
+plt.ylabel("Words at or below index")
+plt.legend()
+plt.show()

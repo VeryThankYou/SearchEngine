@@ -94,7 +94,6 @@ class Index5 implements OverIndex
     {
         int hash_int = hash(str);
         WikiItem word = hashTable[hash_int];
-        boolean not_added_yet_word = true;
         while (word != null) 
         {
             if(word.str.equals(str))
@@ -187,16 +186,15 @@ class Index5 implements OverIndex
         {
             int hashint = hash(searchstr);
             WikiItem curr = hashTable[hashint];  
-            ArrayList<Integer> listOfDocs = null;
             while (curr != null) 
             {
                 if(curr.str.equals(searchstr))
                 {
-                    listOfDocs = curr.docs;
+                    return curr.docs;
                 }
                 curr = curr.next;    
             }
-            return listOfDocs;
+            return new ArrayList<Integer>();
         }
         if(searchstr.charAt(operator_start + 2) == '(')
         {
@@ -207,8 +205,6 @@ class Index5 implements OverIndex
             searchstr = searchstr.substring(1, operator_start - 1) + searchstr.substring(operator_start);
             operator_start -= 2;
         }
-        System.out.println(searchstr);
-        System.out.println(operator_start);
         ArrayList<Integer> searchresult1 = and_or_search(searchstr.substring(0, operator_start));
         ArrayList<Integer> searchresult2 = and_or_search(searchstr.substring(operator_start + 2));
         if(andm1_or1_none0 == -1)

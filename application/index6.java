@@ -129,38 +129,30 @@ class Index6 implements OverIndex
             if(word.str.equals(str))
             {
                 //System.out.println(item.str);
-                if(word.docs.contains(docNumber))
+                if(word.docs.get(word.docs.size() - 1) == docNumber)
                 {
-                    int indexOfDoc = word.docs.indexOf(docNumber);
-                    word.numInDocs.set(indexOfDoc, word.numInDocs.get(indexOfDoc) + 1);
-                    not_added_yet_word = false;
+                    word.numInDocs.set(word.docs.size() - 1, word.numInDocs.get(word.docs.size() - 1) + 1);
+                    return;
                 }
-                else
-                {
-                    //System.out.println(item.str);
-                    word.docs.add(docNumber);
-                    word.numInDocs.add(1);
-                    memoryuse += 1;
-                }
-                not_added_yet_word = false;
-                break;
+                word.docs.add(docNumber);
+                word.numInDocs.add(1);
+                memoryuse += 1;
+                return;
             }
             word = word.next;
         }
-        if(not_added_yet_word)
-            {
-                //System.out.println(item.str);
-                ArrayList<Integer> newDocs = new ArrayList<Integer>();
-                newDocs.add(docNumber);
-                memoryuse += 1;
-                ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
-                newNumInDocs.add(1);
-                memoryuse += 1;
-                WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
-                memoryuse += 1;
-                hashTable[hash_int] = new_word;
-                memoryuse += 1;
-            }
+        //System.out.println(item.str);
+        ArrayList<Integer> newDocs = new ArrayList<Integer>();
+        newDocs.add(docNumber);
+        memoryuse += 1;
+        ArrayList<Integer> newNumInDocs = new ArrayList<Integer>();
+        newNumInDocs.add(1);
+        memoryuse += 1;
+        WikiItem new_word = new WikiItem(str, newDocs, newNumInDocs, hashTable[hash_int]);
+        memoryuse += 1;
+        hashTable[hash_int] = new_word;
+        memoryuse += 1;
+            
     }
 
     public double specificLog(double x, int base)
