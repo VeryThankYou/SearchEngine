@@ -11,14 +11,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class HashTest2 
 {
-    WikiItem [] hashTable;
-    int [] hashTableSize;
     int [] hashvals;
     
 
-    public HashTest()
+    public HashTest2(int[] integers)
     {
-        
+        hashvals = integers;
     }
 
     public int hash(String x)
@@ -40,17 +38,31 @@ public class HashTest2
 
     public static void main(String[] args) 
     {
-        int [] hashvals = new int[4];
-        hashvals[0] = 98317;
-        hashvals[1] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
+        int [] hashvals = new int[5];
+        hashvals[0] = 100663319;
+        hashvals[1] = 98317;
         hashvals[2] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
-        hashvals[3] = ThreadLocalRandom.current().nextInt(1, hashvals[0]);
-        System.out.println("Preprocessing " + args[0]);
-        HashTest i = new HashTest();
-        i.Build(args[0], hashvals);
+        hashvals[3] = ThreadLocalRandom.current().nextInt(1, hashvals[1]);
+        hashvals[4] = ThreadLocalRandom.current().nextInt(0, hashvals[1]);
+        HashTest2 i = new HashTest2(hashvals);
+        int numTests = 10000;
+        Long[] times = new Long[numTests];
+        String testString = "";
+        Long startTime;
+        Long endTime;
+        Long totalTime;
+        for(int j = 0; j < numTests; j++)
+        {
+            testString = testString + "a";
+            startTime = System.nanoTime();
+            int o = i.hash(testString);
+            endTime = System.nanoTime();
+            totalTime = endTime - startTime;
+            times[j] = totalTime;
+        }
         try 
         {
-            File myObj = new File("HashSize.txt");
+            File myObj = new File("HashTime.txt");
             if (myObj.createNewFile()) 
             {
                 System.out.println("File created: " + myObj.getName());
@@ -64,11 +76,10 @@ public class HashTest2
         }
         try 
         {
-            FileWriter myWriter = new FileWriter("HashSize" + args[0].charAt(args[0].length() - 5) + ".txt");
-            myWriter.write(i.uniqueWords + "\n");
-            for(int j = 0; j < hashvals[0]; j++)
+            FileWriter myWriter = new FileWriter("HashTime.txt");
+            for(int j = 0; j < numTests; j++)
             {
-                myWriter.write(i.hashTableSize[j] + "|");
+                myWriter.write(times[j] + "|");
             }
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
