@@ -179,7 +179,7 @@ class Index7 implements OverIndex
         for(int i = 0; i < result.size(); i++)
         {
             SearchStruct element = result.get(i);
-            double Wd = Math.sqrt(element.Wdsum);
+            int Wd = docLength.get(result.get(i).doc);
             double finalSd = element.Sds/Wd;
             weightedResult[i] = new TupleIF(result.get(i).doc, finalSd);
         }
@@ -309,8 +309,8 @@ class Index7 implements OverIndex
         {
             int hashint = hash(searchstr);
             WikiItem curr = hashTable[hashint];  
-            ArrayList<Integer> listOfDocs = new ArrayList<Integer>();;
-            ArrayList<Integer> fdts = null;
+            ArrayList<Integer> listOfDocs = new ArrayList<Integer>();
+            ArrayList<Integer> fdts = new ArrayList<Integer>();
             while (curr != null) 
             {
                 if(curr.str.equals(searchstr))
