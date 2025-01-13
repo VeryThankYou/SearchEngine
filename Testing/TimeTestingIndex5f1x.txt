@@ -1,0 +1,33 @@
+Buildtime:
+0.305047
+Memory use: 
+100678031
+Searchtime Index5:
+long&&(and||(or&&(if||(is&&(for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want)))))))))))))):0.0011219
+and||(or&&(if||(is&&(for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want))))))))))))):3.782E-4
+or&&(if||(is&&(for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want)))))))))))):2.267E-4
+if||(is&&(for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want))))))))))):1.827E-4
+is&&(for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want)))))))))):1.551E-4
+for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want))))))))):1.31E-4
+can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want)))))))):1.237E-4
+the||(to&&(this||(that&&(an||(a&&(was||(would&&want))))))):1.149E-4
+to&&(this||(that&&(an||(a&&(was||(would&&want)))))):9.19E-5
+this||(that&&(an||(a&&(was||(would&&want))))):8.69E-5
+that&&(an||(a&&(was||(would&&want)))):6.66E-5
+an||(a&&(was||(would&&want))):5.83E-5
+a&&(was||(would&&want)):4.77E-5
+was||(would&&want):7.58E-5
+would&&want:1.88E-5
+want:6.2E-6
+and:1.62E-5
+Claus:2.28E-5
+anarchy:3.86E-5
+president:9.5E-6
+machine:3.48E-5
+basic:6.0E-6
+probability:5.4E-6
+qzx:2.3E-6
+is:2.05E-5
+president&&state:3.11E-5
+Apollo&&NASA:4.5E-6
+astronaut||Apollo:0.0

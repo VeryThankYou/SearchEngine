@@ -66,7 +66,7 @@ public class Testing
         }
         words = words2;
         float[] sdurations = new float[words.length];
-        for(int i = 10; i < n; i++)
+        for(int i = 0; i < n; i++)
         {
             String name = "application/documents/Wiki" + Integer.toString(i + 1) + ".txt";
             tests = name;
