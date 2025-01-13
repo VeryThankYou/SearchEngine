@@ -20,16 +20,88 @@ i4mem = [0.0828328, 0.5639853, 1.6083951, 5.945152, 12.77735, 39.22215, 142.0380
 i5mem = [0.0671258, 0.7137383, 2.5871959, 7.624978, 27.615747, 61.485825, 245.6389, 848.88794, 2636.5195, 9983.88, 7607.1064]
 i7mem = [131541, 424660, 715662, 1567616, 2964854, 5656201, 13391480, 26081319, 51139658, 102516668, 207483646]
 
+i1ssum = [27759, 329747, 658583, 1656135, 3344003, 6697531, 16712745, 33434065, 66884511]
+i3ssum = [1.135883, 53.506283, 256.35843, 1198.2571, 2874.3618, 6390.7246, 23365.23, 65997.03]
+i4ssum = [0.0828328, 0.5639853, 1.6083951, 5.945152, 12.77735, 39.22215, 142.03801, 541.78296, 1628.5765, 6391.682, 16213.861]
+i5ssum = [0.0671258, 0.7137383, 2.5871959, 7.624978, 27.615747, 61.485825, 245.6389, 848.88794, 2636.5195, 9983.88, 7607.1064]
+i7ssum = [131541, 424660, 715662, 1567616, 2964854, 5656201, 13391480, 26081319, 51139658, 102516668, 207483646]
 
-plt.plot([Ts[i] for i in range(11)], i4bs, '.', color="blue")
-plt.plot([Ts[i] for i in range(11)], i4bs, color="blue")
-plt.title("Hashtable datastructure build-time")
+for i in range(len(i1bs)):
+    file = open("Testing/TimeTestingIndex1f" + str(i+1) + ".txt", encoding="utf-8")
+    lines = file.readlines()
+    file.close()
+    i1mem[i] = int(lines[3])
+    searchtime = 0
+    for j in range(5, 15):
+        searchtime += float(lines[j].split(":")[-1][:-1])
+    i1ssum[i] = searchtime
+
+for i in range(len(i3bs)):
+    file = open("Testing/TimeTestingIndex3f" + str(i+1) + ".txt", encoding="utf-8")
+    lines = file.readlines()
+    file.close()
+    i3mem[i] = int(lines[3])
+    searchtime = 0
+    for j in range(5, 15):
+        searchtime += float(lines[j].split(":")[-1][:-1])
+    i3ssum[i] = searchtime
+    
+for i in range(len(i4bs)):
+    file = open("Testing/TimeTestingIndex4f" + str(i+1) + ".txt", encoding="utf-8")
+    lines = file.readlines()
+    file.close()
+    i4mem[i] = int(lines[3])
+    searchtime = 0
+    for j in range(5, 15):
+        searchtime += float(lines[j].split(":")[-1][:-1])
+    i4ssum[i] = searchtime
+
+for i in range(len(i5bs)):
+    file = open("Testing/TimeTestingIndex5f" + str(i+1) + ".txt", encoding="utf-8")
+    lines = file.readlines()
+    file.close()
+    i5mem[i] = int(lines[3])
+
+for i in range(len(i7bs)):
+    file = open("Testing/TimeTestingIndex7f" + str(i+1) + ".txt", encoding="utf-8")
+    lines = file.readlines()
+    file.close()
+    i7mem[i] = int(lines[3])
+
+plt.plot([Ts[i] for i in range(9)], i1ssum, '.', color="blue")
+plt.plot([Ts[i] for i in range(9)], i1ssum, color="blue")
+plt.title("Memory for naive datastructure")
 plt.xlabel("T in each dataset")
-plt.ylabel("Buildtime in seconds")
+plt.ylabel("Memory measure")
 plt.show()
 
+plt.plot([ns[i] for i in range(8)], i3ssum, '.', color="blue")
+plt.plot([ns[i] for i in range(8)], i3ssum, color="blue")
+plt.title("Memory for the linked list datastructure")
+plt.xlabel("N*n in each dataset")
+plt.ylabel("Memory measure")
+plt.show()
 
+plt.plot([ns[i] for i in range(11)], i4ssum, '.', color="blue")
+plt.plot([ns[i] for i in range(11)], i4ssum, color="blue")
+plt.title("Memory for hash-table datastructure")
+plt.xlabel("N*n in each dataset")
+plt.ylabel("Memory measure")
+plt.show()
 
+plt.plot([Ns[i]*ns[i] for i in range(11)], i5mem, '.', color="blue")
+plt.plot([Ns[i]*ns[i] for i in range(11)], i5mem, color="blue")
+plt.title("Memory for hash-table datastructure (and-or)")
+plt.xlabel("N*n in each dataset")
+plt.ylabel("Memory measure")
+plt.show()
+
+plt.plot([Ss[i] for i in range(11)], i7bs, '.', color="blue")
+plt.plot([Ss[i] for i in range(11)], i7bs, color="blue")
+plt.title("Buildtime for hash-table datastructure (ranked)")
+plt.xlabel("S in each dataset")
+plt.ylabel("Time in seconds")
+plt.show()
 """
 file = open("HashTime.txt", encoding="utf-8")
 lines = file.readlines()
