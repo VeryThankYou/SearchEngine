@@ -42,7 +42,7 @@ public class Testing
 
     public static void writeTests(OverIndex index)
     {
-        int n = 11;
+        int n = 6;
         String tests;
         float bdurations;
         
@@ -65,8 +65,26 @@ public class Testing
             words2[iteration + i2+1] = words[i2];
         }
         words = words2;
+
+        wtemp = "and";
+        words2 = new String[100];
+        for(int i2 = 0; i2 < 100; i2++)
+        {
+            words2[i2] = wtemp;
+            if(i2 == 0)
+            {
+                wtemp = wtemp + "||and";
+            }
+            else
+            {
+                wtemp = "(" + wtemp + ")||and";
+            }
+            
+        }
+
+        words = words2;
         float[] sdurations = new float[words.length];
-        for(int i = 10; i < n; i++)
+        for(int i = 5; i < n; i++)
         {
             String name = "application/documents/Wiki" + Integer.toString(i + 1) + ".txt";
             tests = name;
@@ -81,7 +99,7 @@ public class Testing
             index.resetMemoryuse();
             try 
             {
-                File myObj = new File("Testing/TimeTesting" + index.toString() + "f" + Integer.toString(i + 1) + "x.txt");
+                File myObj = new File("Testing/TimeTesting" + index.toString() + "f" + Integer.toString(i + 1) + "fqt.txt");
                 if (myObj.createNewFile()) 
                 {
                     System.out.println("File created: " + myObj.getName());
@@ -95,7 +113,7 @@ public class Testing
             }
             try 
             {
-                FileWriter myWriter = new FileWriter("Testing/TimeTesting" + index.toString() + "f" + Integer.toString(i + 1) + "x.txt");
+                FileWriter myWriter = new FileWriter("Testing/TimeTesting" + index.toString() + "f" + Integer.toString(i + 1) + "fqt.txt");
                 myWriter.write("Buildtime:\n");
                 myWriter.write(bdurations + "\n");
                 myWriter.write("Memory use: \n");
@@ -120,7 +138,7 @@ public class Testing
 
     public static void main(String[] args)
     {
-        OverIndex i = new Index5();
+        OverIndex i = new Index7();
         writeTests(i);
     }
 }

@@ -36,28 +36,42 @@ for i in range(len(i1bs)):
         searchtime += float(lines[j].split(":")[-1][:-1])
     i1ssum[i] = searchtime
 
-for i in range(len(i3bs)):
-    file = open("Testing/TimeTestingIndex3f" + str(i+1) + ".txt", encoding="utf-8")
+for i in range(len(i7bs)):
+    file = open("Testing/TimeTestingIndex7f" + str(i+1) + ".txt", encoding="utf-8")
     lines = file.readlines()
     file.close()
-    i3mem[i] = int(lines[3])
     searchtime = 0
-    for j in range(5, 15):
+    for j in range(5, 25):
         searchtime += float(lines[j].split(":")[-1][:-1])
-    i3ssum[i] = searchtime
-    
-for i in range(len(i4bs)):
-    file = open("Testing/TimeTestingIndex4f" + str(i+1) + ".txt", encoding="utf-8")
-    lines = file.readlines()
-    file.close()
-    i4mem[i] = int(lines[3])
-    searchtime = 0
-    for j in range(5, 15):
-        searchtime += float(lines[j].split(":")[-1][:-1])
-    i4ssum[i] = searchtime
+    i7ssum[i] = searchtime
+
+plt.plot([Ns[i] for i in range(11)], i7ssum, '.', color="blue")
+plt.plot([Ns[i] for i in range(11)], i7ssum, color="blue", label="Search time")
+plt.plot([Ns[i] for i in range(11)], [(1/1000000)*Ns[i]*np.log(Ns[i]) for i in range(11)], '--', color="red", label="O(N*log(N))")
+plt.title("Search time for ranked search")
+plt.xlabel("N in each dataset")
+plt.ylabel("Time in seconds")
+plt.legend()
+plt.show()
+
+searchtime = [0 for _ in range(100)]
+lengths = [i for i in range(1, 101)]
+file = open("Testing/TimeTestingIndex5f6x.txt", encoding="utf-8")
+lines = file.readlines()
+file.close()
+
+for j in range(5, 105):
+    searchtime[j - 5] += float(lines[j].split(":")[-1][:-1])
+    print(searchtime[j - 5])
+plt.plot(lengths, searchtime, '.', color="blue")
+plt.plot(lengths, searchtime, color="blue")
+plt.title("Search time for hash-table datastructure (ranked and-or)")
+plt.xlabel("f_q,t")
+plt.ylabel("Time in seconds")
+plt.show()
 
 for i in range(len(i5bs)):
-    file = open("Testing/TimeTestingIndex5f" + str(i+1) + ".txt", encoding="utf-8")
+    file = open("Testing/TimeTestingIndex4f" + str(i+1) + ".txt", encoding="utf-8")
     lines = file.readlines()
     file.close()
     i5mem[i] = int(lines[3])
