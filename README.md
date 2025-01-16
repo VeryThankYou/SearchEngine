@@ -5,11 +5,17 @@ In the application folders, the 6 java files, index1-index7, are search engines.
 Index 1 is the naive datastructure, index3 is the linked list of unique terms, index4 is the hash-table solution, index5 implements and-or search, index6 has single-term ranked searching, index 7 has ranked and-or search.
 
 Using and-or search: To make an and search, the following syntax is used:
+
 term1&&term2
+
 Or search is as follows:
+
 term1||term2
+
 These can be combined using nested parentheses, but only use parenthesis for more than 2 terms, and remember that the placement changes the query. Here is an example using the example query from the report:
+
 ((duck||goose)&&(roast||recipe))||((state||country)&&(president||minister))
+
 You cannot query terms with |, &, or parentheses in them, this will cause errors.
 
 # Testing files:
