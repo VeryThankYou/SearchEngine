@@ -57,10 +57,12 @@ for i in range(len(i4bs)):
     i4ssum[i] = searchtime
 
 for i in range(len(i5bs)):
-    file = open("Testing/TimeTestingIndex5f" + str(i+1) + ".txt", encoding="utf-8")
+    file = open("Testing/TimeTestingIndex5f" + str(i+1) + "x.txt", encoding="utf-8")
     lines = file.readlines()
     file.close()
-    i5mem[i] = int(lines[3])
+    for j in range(21, 33):
+        searchtime += float(lines[j].split(":")[-1][:-1])
+    i5ssum[i] = searchtime
 
 for i in range(len(i7bs)):
     file = open("Testing/TimeTestingIndex7f" + str(i+1) + ".txt", encoding="utf-8")
@@ -82,18 +84,18 @@ plt.xlabel("n in each dataset")
 plt.ylabel("Time in seconds")
 plt.show()
 
-plt.plot([ns[i] for i in range(11)], i4ssum, '.', color="blue")
-plt.plot([ns[i] for i in range(11)], i4ssum, color="blue")
-plt.title("Search time for hash-table datastructure")
+plt.plot([ns[i] for i in range(11)], i5ssum, '.', color="blue")
+plt.plot([ns[i] for i in range(11)], i5ssum, color="blue")
+plt.title("Search time for hash-table datastructure (and-or)")
 plt.xlabel("n in each dataset")
 plt.ylabel("Time in seconds")
 plt.show()
 
-plt.plot([Ns[i]*ns[i] for i in range(11)], i5mem, '.', color="blue")
-plt.plot([Ns[i]*ns[i] for i in range(11)], i5mem, color="blue")
-plt.title("Memory for hash-table datastructure (and-or)")
-plt.xlabel("N*n in each dataset")
-plt.ylabel("Memory measure")
+plt.plot([Ss[i] for i in range(11)], i5bs, '.', color="blue")
+plt.plot([Ss[i] for i in range(11)], i5bs, color="blue")
+plt.title("Buildtime for hash-table datastructure (and-or)")
+plt.xlabel("S in each dataset")
+plt.ylabel("Time in seconds")
 plt.show()
 
 plt.plot([Ss[i] for i in range(11)], i7bs, '.', color="blue")

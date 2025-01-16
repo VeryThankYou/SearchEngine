@@ -48,6 +48,7 @@ public class Testing
         
         int mem;
         String[] words = {"long&&(and||(or&&(if||(is&&(for||(can&&(the||(to&&(this||(that&&(an||(a&&(was||(would&&want))))))))))))))", "and", "Claus", "anarchy", "president", "machine", "basic", "probability", "qzx", "is", "president&&state", "Apollo&&NASA", "astronaut||Apollo"};
+        /* 
         String[] words2 = new String[15 + words.length];
         String wtemp = words[0];
         int iteration = 0;
@@ -81,10 +82,11 @@ public class Testing
             }
             
         }
-
+        
         words = words2;
+        */
         float[] sdurations = new float[words.length];
-        for(int i = 5; i < n; i++)
+        for(int i = 0; i < n; i++)
         {
             String name = "application/documents/Wiki" + Integer.toString(i + 1) + ".txt";
             tests = name;
